@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web-php_db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - "./docker_tmp/mysql_data:/var/lib/mysql"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: f23Ur23D
+      MYSQL_DATABASE: gtree
+      MYSQL_USER: gtreeu
+      MYSQL_PASSWORD: jET3E4W9vm
+    networks:
+      - family_tree_net
+
+  web-php:
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    ports:
+      - "88:80"
+    volumes:
+      - ./www:/var/www/html
+    networks:
+      - family_tree_net
+    restart: always
+    depends_on:
+      - web-php_db
+
+networks:
+  family_tree_net:
+    driver: bridge

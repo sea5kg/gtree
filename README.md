@@ -1,32 +1,18 @@
 # gtree
 
-Простой сайт для построения генеалогического дерева
+Website for building a family tree
 
-## Разворачивание и обновление базы данных
-
-1. Подготовить пустую базу данных и и изменить конфигурацию подключения в www/conf.d/config.php
-Например использую консольный клиент (mysql):
+## Run in docker
 
 ```
-> CREATE DATABASE `gtree` CHARACTER SET utf8 COLLATE utf8_general_ci;
-> CREATE USER 'gtreeu'@'localhost' IDENTIFIED BY 'jET3E4W9vm';
-> GRANT ALL PRIVILEGES ON gtree.* TO 'gtreeu'@'localhost' WITH GRANT OPTION;
-> FLUSH PRIVILEGES;
+$ docker-compose up
 ```
 
-2. Вызвать скрипт:
+## First login to system via admin
 
-```
-$ cd www
-$ php update_db.php
-```
+Link: http://localhost:803/admin/
+Default login/password: admin/admin
 
-## Первый вход в систему
-
-Дефолтный логин пароль для админа  (`%WHERE_GTREE%/admin/`):
-
-admin/admin
-
-1. Требуется создать нового административного пользователя
-2. Зайти под новым пользоватлем
-3. Удалить пользователя admin
+1. Create a new admin user
+2. Re-logon by new user
+3. Remove user 'admin'

@@ -95,7 +95,7 @@ class GTree {
 	}
 	
 	static function getRandomString($length = 10) {
-		mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
+		mt_srand(intval((double)microtime()*10000));//optional for php 4.2.0 and up.
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$charactersLength = strlen($characters);
 		$randomString = '';

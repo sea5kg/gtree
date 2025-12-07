@@ -3,7 +3,12 @@ www/public/*.jpg
 www/public/tree.png
 www/public/tree2.png
 
+/backups
+
 # c++
 /tmp
 /gtree
 /.wsjcpp
+
+# docker
+/docker_tmp

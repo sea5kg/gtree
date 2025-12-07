@@ -2,7 +2,7 @@
 
 	$config = array();
 	$config['conn'] = array(
-        "host" => "localhost",
+        "host" => "web-php_db",
         "db" => "gtree",
         "username" => "gtreeu",
         "password" => "jET3E4W9vm",

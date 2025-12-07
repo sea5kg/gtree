@@ -1,19 +1,6 @@
 <?php
 
 function update0001($conn){
-    $stmt = $conn->prepare("
-        CREATE TABLE updates (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `version` int(11) NOT NULL,
-            `dt` datetime NOT NULL,
-            PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-    ");
-    
-    if (!$stmt->execute()) {
-        error_log(print_r($stmt->errorInfo(),true));
-        return false;
-    }
 
     $stmt = $conn->prepare("
         CREATE TABLE `events` (
