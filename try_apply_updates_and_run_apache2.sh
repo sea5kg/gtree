@@ -4,6 +4,14 @@ MAX_RETRIES=10
 DELAY_SECONDS=2
 ATTEMPT=0
 
+sed -i 's/upload_max_filesize.*/upload_max_filesize = 100M/g' /usr/local/etc/php/php.ini-development
+sed -i 's/post_max_size.*/post_max_size = 100M/g' /usr/local/etc/php/php.ini-development
+
+sed -i 's/upload_max_filesize.*/upload_max_filesize = 100M/g' /usr/local/etc/php/php.ini-production
+sed -i 's/post_max_size.*/post_max_size = 100M/g' /usr/local/etc/php/php.ini-production
+
+cp -rf /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+
 while true; do
     # Your command or code block to be retried
     cd /var/www/html/
@@ -23,4 +31,4 @@ while true; do
     fi
 done
 
- apache2ctl -D FOREGROUND
+apache2ctl -D FOREGROUND

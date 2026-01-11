@@ -23,6 +23,7 @@ services:
       - "88:80"
     volumes:
       - ./www:/var/www/html
+      - ./docker_tmp/log:/var/log/apache2
     networks:
       - family_tree_net
     restart: always
