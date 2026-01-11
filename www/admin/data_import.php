@@ -99,7 +99,7 @@ function update_or_insert($p) {
 function update_parents($p) {
     $mother = $p['mother'];
     $father = $p['father'];
-    
+
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('SELECT id FROM persons WHERE uid = ?;');
     $stmt->execute(array($mother));
@@ -124,9 +124,9 @@ function update_parents($p) {
 }
 
 if (isset($_POST['do_persons_import'])) {
-    
-    $data_json_tmp = tempnam("tmp", "json");
-    
+
+    $data_json_tmp = tempnam(sys_get_temp_dir(), "json");
+
     // $uploaddir = '/var/www/uploads/';
     // $uploadfile = $uploaddir . basename($_FILES['gtree_data_zip']['name']);
     // $error = $uploadfile; 
