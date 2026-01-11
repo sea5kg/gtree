@@ -24,7 +24,7 @@ class GTree {
 		11 => "Ноябрь",
 		12 => "Декабрь",
 	);
-	
+
 	static $gtree_padding = 10;
 	static $gtree_yearstep = 16;
 	static $gtree_card_width = 159;
@@ -77,7 +77,7 @@ class GTree {
 	}
 
 	static function calcX_in_px($gtree_minyear, $year) {
-		$ret = $year - $gtree_minyear; 
+		$ret = $year - $gtree_minyear;
 		$ret = $ret * GTree::$gtree_yearstep + GTree::$gtree_padding;
 		return $ret;
 	}
@@ -85,7 +85,7 @@ class GTree {
 	static function dbConn() {
 		if (GTree::$CONN != null)
 			return GTree::$CONN;
-		
+
 			GTree::$CONN = new PDO(
 			'mysql:host='.GTree::$CONFIG['conn']['host'].';dbname='.GTree::$CONFIG['conn']['db'].';charset=utf8',
 			GTree::$CONFIG['conn']['username'],
@@ -93,9 +93,9 @@ class GTree {
 		);
 		return GTree::$CONN;
 	}
-	
+
 	static function getRandomString($length = 10) {
-		mt_srand(intval((double)microtime()*10000));//optional for php 4.2.0 and up.
+		mt_srand(intval((double)microtime()*10000)); //optional for php 4.2.0 and up.
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$charactersLength = strlen($characters);
 		$randomString = '';
@@ -104,11 +104,11 @@ class GTree {
 		}
 		return $randomString;
 	}
-	
+
 	static function isAuthorized() {
 		return GTree::$TOKEN != null;
 	}
-	
+
 	static function startAdminPage() {
 		if (isset($_COOKIE['gt_admin_token'])) {
 			GTree::$TOKEN = $_COOKIE['gt_admin_token'];
@@ -135,7 +135,7 @@ class GTree {
 				GTree::error(500, $e->getMessage());
 			}
 		}
-		
+
 		if (!GTree::isAuthorized()) {
 			header("Location: login.php");
 			exit;
@@ -147,7 +147,7 @@ class GTree {
 			exit;
 		}
 	}
-	
+
 	static function isAdmin() {
 		return GTree::$ROLE == 'admin';
 	}
