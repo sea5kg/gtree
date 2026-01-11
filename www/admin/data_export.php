@@ -64,7 +64,7 @@ foreach ($data['persons'] as $k => $v) {
 }
 
 
-$path_zip = tempnam("tmp", "zip");
+$path_zip = tempnam(sys_get_temp_dir(), "zip");
 
 $zip = new ZipArchive;
 if ($zip->open($path_zip, ZipArchive::CREATE) === TRUE) {
@@ -93,7 +93,7 @@ if (file_exists($path_zip)) {
     header("Content-Length:".filesize($path_zip));
     header('Content-Disposition: attachment; filename=gtree_data_'.$dt.'.zip');
     readfile($path_zip);
-    die();        
+    die();
 } else {
     die("Error: File not found.");
 } 
