@@ -123,15 +123,68 @@ function update_parents($p) {
 
 }
 
+
+function update_or_insert_bio($bio) {
+    $conn = GTree::dbConn();
+
+    $stmt = $conn->prepare('SELECT * FROM persons WHERE uid = ?;');
+    $stmt->execute(array($bio["personid"]));
+
+    $personid = 0;
+    if ($row = $stmt->fetch()) {
+        $personid = intval($row['id']);
+    }
+
+    $values = array();
+    $values[] = $bio['type'];
+    $values[] = $bio['year'];
+    $values[] = $bio['description'];
+    $values[] = $bio['created'];
+    $values[] = $bio['updated'];
+    $values[] = $personid;
+
+    $stmt = $conn->prepare('SELECT * FROM biographies WHERE personid = ?;');
+    $stmt->execute(array($personid));
+    $query = "";
+    if ($row = $stmt->fetch()) {
+        // record found
+        $query = "UPDATE biographies SET
+            type = ?,
+            year = ?,
+            description = ?,
+            created = ?,
+            updated = ?
+        WHERE
+            personid = ?
+        ";
+    } else {
+        // record not found
+        $query = "INSERT INTO biographies(
+            type,
+            year,
+            description,
+            created,
+            updated,
+            personid
+        ) VALUES(
+            ?,?,?,?,?,?
+        );";
+    }
+
+    $stmt2 = $conn->prepare($query);
+    $stmt2->execute($values);
+}
+
 if (isset($_POST['do_persons_import'])) {
 
     $data_json_tmp = tempnam(sys_get_temp_dir(), "json");
 
     // $uploaddir = '/var/www/uploads/';
     // $uploadfile = $uploaddir . basename($_FILES['gtree_data_zip']['name']);
-    // $error = $uploadfile; 
+    // $error = $uploadfile;
     $path_tmp_zip = $_FILES['gtree_data_zip']['tmp_name'];
-    $zip = new ZipArchive;
+
+    $zip = new ZipArchive();
     $res = $zip->open($path_tmp_zip);
     if ($res === TRUE) {
         // $zip->extractTo('/my/destination/dir/');
@@ -145,6 +198,15 @@ if (isset($_POST['do_persons_import'])) {
             update_or_insert($p);
             update_parents($p);
         }
+
+        if (isset($data_json['biographies'])) {
+            $biographies = $data_json['biographies'];
+            foreach ($biographies as $bio) {
+                update_or_insert_bio($bio);
+            }
+        }
+
+
         GTreeImage::generate();
         header('Location: ');
     } else {
