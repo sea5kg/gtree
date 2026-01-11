@@ -14,40 +14,47 @@
     <title>Family Tree</title>
   </head>
   <body>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" id="main_menu_item" href="#">Генеологическое древо</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" id="main_menu_item" href="#">Генеологическое древо</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="./">Дерево 1</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="index2.php">Дерево 2</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="persons.php">Персоны</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="contact.php">Обратная связь</a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      <br>
-      <div class="container">
-
-        <a href="/public/tree.png" class="btn btn-primary" id="download_tree" download="tree.png">Скачать</a>
-        <div class="btn btn-primary" id="enlarge_image_size"> + Увеличить</div>
-        <div class="btn btn-primary" style="display: none" id="reduce_image_size">- Уменьшить</div>
-        <hr>
-        <div class="gtree-container">
-          <img id="gtree_image" style="width: 100%"/>
-        </div>
-        <hr>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="./">Дерево 1</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="./?page=tree2">Дерево 2</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="persons.php">Персоны</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="contact.php">Обратная связь</a>
+          </li>
+        </ul>
       </div>
+    </nav>
+    <br>
+    <div class="container gtree-page-container" style="display: none" id="page_tree1">
+
+      <a href="/public/tree.png" class="btn btn-primary" id="download_tree" download="tree.png">Скачать</a>
+      <div class="btn btn-primary" id="enlarge_image_size"> + Увеличить</div>
+      <div class="btn btn-primary" style="display: none" id="reduce_image_size">- Уменьшить</div>
+      <hr>
+      <div class="gtree-container">
+        <img id="gtree_image" style="width: 100%"/>
+      </div>
+      <hr>
+    </div>
+
+    <div class="container gtree-page-container" style="display: none" id="page_tree2">
+      <div class="genealogical-tree2" id="renderimage_client">
+        <canvas id="gtree" width="500" height="500"></canvas>
+      </div>
+    </div>
+
   </body>
 </html>

@@ -23,10 +23,10 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item active">
-                <a class="nav-link" href="./">Дерево 1</a>
+                <a class="nav-link" href="./?page=tree1">Дерево 1</a>
               </li>
               <li class="nav-item active">
-                <a class="nav-link" href="index2.php">Дерево 2</a>
+                <a class="nav-link" href="./?page=tree2">Дерево 2</a>
               </li>
               <li class="nav-item active">
                 <a class="nav-link" href="persons.php">Персоны</a>

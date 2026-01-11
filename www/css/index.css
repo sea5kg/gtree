@@ -2,12 +2,12 @@ body {
   height: 100%;
 }
 
-.genealogical-tree {
+.genealogical-tree2 {
   position: fixed;
   border: 1px solid black;
   left: 10px;
   width: calc(100% - 20px);
-  height: calc(100% - 60px);
+  height: calc(100% - 100px);
   overflow: scroll;
 }
 
