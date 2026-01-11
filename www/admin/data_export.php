@@ -8,6 +8,7 @@ date_default_timezone_set('UTC');
 
 $data = array();
 $data['persons'] = array();
+$data['photos'] = array();
 
 $conn = GTree::dbConn();
 $stmt = $conn->prepare('SELECT * FROM persons ORDER BY bornyear;');
@@ -54,7 +55,7 @@ foreach ($data['persons'] as $k => $v) {
     } else {
         $data['persons'][$k]['mother'] = '';
     }
-    
+
     $father = $data['persons'][$k]['father'];
     if (isset($persons_by_ids[$father])) {
         $data['persons'][$k]['father'] = isset($persons_by_ids[$father]) ? $persons_by_ids[$father] : '';
@@ -63,6 +64,28 @@ foreach ($data['persons'] as $k => $v) {
     }
 }
 
+
+// export photos
+
+$stmt = $conn->prepare('SELECT * FROM photos ORDER BY id;');
+$stmt->execute();
+
+$photos_uids = array();
+
+while ($row = $stmt->fetch()) {
+    $id = intval($row['id']);
+    $uid = $row['uid'];
+    $photos_uids[] = $uid;
+    $data['photos'][] = array(
+        'uid' => $uid,
+        'name' => $row['name'],
+        'year' => $row['year'],
+        'year_notexactly' => $row['year_notexactly'],
+        'description' => $row['description'],
+        'created' => $row['created'],
+        'updated' => $row['updated'],
+    );
+}
 
 $path_zip = tempnam(sys_get_temp_dir(), "zip");
 
@@ -82,6 +105,14 @@ if ($zip->open($path_zip, ZipArchive::CREATE) === TRUE) {
     if (file_exists($dir_data_export.'/../public/tree.png')) {
         $zip->addFile($dir_data_export.'/../public/tree.png', 'tree.png');
     }
+
+    foreach ($photos_uids as $v) {
+        $photo_path = $dir_data_export.'/../public/'.$v.'.jpg';
+        if (file_exists($photo_path)) {
+            $zip->addFile($photo_path, 'photos/'.$v.'.jpg');
+        }
+    }
+
     $zip->close();
 } else {
     die("Error: Could not created ".$path_zip);
