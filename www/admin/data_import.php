@@ -123,7 +123,6 @@ function update_parents($p) {
 
 }
 
-
 function update_or_insert_bio($bio) {
     $conn = GTree::dbConn();
 
@@ -175,6 +174,54 @@ function update_or_insert_bio($bio) {
     $stmt2->execute($values);
 }
 
+function update_or_insert_photo($photo) {
+    $conn = GTree::dbConn();
+
+    $photouid = $photo["uid"];
+
+    $values = array();
+    $values[] = $photo['name'];
+    $values[] = $photo['year'];
+    $values[] = $photo['year_notexactly'];
+    $values[] = $photo['description'];
+    $values[] = $photo['created'];
+    $values[] = $photo['updated'];
+    $values[] = $photouid;
+
+    $stmt = $conn->prepare('SELECT * FROM photos WHERE uid = ?;');
+    $stmt->execute(array($photouid));
+    $query = "";
+    if ($row = $stmt->fetch()) {
+        // record found
+        $query = "UPDATE photos SET
+            name = ?,
+            year = ?,
+            year_notexactly = ?,
+            description = ?,
+            created = ?,
+            updated = ?
+        WHERE
+            uid = ?
+        ";
+    } else {
+        // record not found
+        $query = "INSERT INTO photos(
+            name,
+            year,
+            year_notexactly,
+            description,
+            created,
+            updated,
+            uid
+        ) VALUES(
+            ?,?,?,?,?,?,?
+        );";
+    }
+
+    $stmt2 = $conn->prepare($query);
+    $stmt2->execute($values);
+}
+
 if (isset($_POST['do_persons_import'])) {
 
     $data_json_tmp = tempnam(sys_get_temp_dir(), "json");
@@ -190,7 +237,6 @@ if (isset($_POST['do_persons_import'])) {
         // $zip->extractTo('/my/destination/dir/');
         copy("zip://".$path_tmp_zip."#data.json", $data_json_tmp);
         $data_json = file_get_contents($data_json_tmp);
-        $zip->close();
         $data_json = json_decode($data_json, TRUE);
 
         $persons = $data_json['persons'];
@@ -206,6 +252,24 @@ if (isset($_POST['do_persons_import'])) {
             }
         }
 
+        if (isset($data_json['photos'])) {
+            $photos = $data_json['photos'];
+            foreach ($photos as $photo) {
+                update_or_insert_photo($photo);
+                $target_file = $dir_data_import."/../public/".$photo["uid"].".jpg";
+                if (file_exists($target_file)) {
+                    unlink($target_file);
+                }
+                if (file_exists($target_file)) {
+                    echo "Could not remove ".$photo["uid"]."<br/>";
+                }
+                copy("zip://".$path_tmp_zip."#photos/".$photo["uid"].".jpg", $target_file);
+                if (!file_exists($target_file)) {
+                    echo "Could not extract ".$photo["uid"]."<br/>";
+                }
+            }
+        }
+        $zip->close();
 
         GTreeImage::generate();
         header('Location: ');
