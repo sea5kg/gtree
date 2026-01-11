@@ -12,7 +12,7 @@
           <img style="width: 100%" src="public/tree.png?v1=<?php echo rand(100000,999999); ?>"/>
         </div>
         <hr>
-      </div>  
+      </div>
     <script>
     $('#expand_gtree').unbind().bind('click', function(){
       $('.gtree-container img').css({'width' : ''});

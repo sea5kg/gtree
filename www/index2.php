@@ -1,5 +1,5 @@
 <?php
-      include_once("gtree.php"); 
+      include_once("gtree.php");
       include_once("head.php");
 ?>
 
@@ -20,7 +20,7 @@
           if ($row['bornyear'] == 0) {
             continue;
           }
-          
+
           $minyear = $row['bornyear'] < $minyear ? $row['bornyear'] : $minyear;
           $maxyear = $row['bornyear'] > $maxyear ? $row['bornyear'] : $maxyear;
 
@@ -67,7 +67,7 @@
       }
 
       function calcX_in_px(year) {
-        var ret = year - gtree_minyear; 
+        var ret = year - gtree_minyear;
         ret = ret * gtree_yearstep + gtree_padding;
         return ret;
       }
@@ -75,7 +75,7 @@
       var canvas = document.getElementById("gtree");
       var ctx = canvas.getContext("2d");
       canvas.width  = gtree_width;
-      canvas.height = gtree_height; 
+      canvas.height = gtree_height;
       canvas.style.width  = gtree_width + 'px';
       canvas.style.height = gtree_height + 'px';
 
@@ -104,7 +104,7 @@
           ctx.moveTo(x1, gtree_padding + 10);
           ctx.lineTo(x1, gtree_padding + 30);
           ctx.stroke();
-          
+
           ctx.fillText('' + y, x1 + 3, 30);
 
           // console.log(y);
@@ -114,11 +114,11 @@
         // parents
         for (var i in gt) {
           var p = gt[i];
-          
+
           if (p.mother > 0 && p.father > 0) {
             var mo = gt[p.mother];
             var fa = gt[p.father];
-            
+
             var mo_x1 = calcX_in_px(mo.bornyear);
             var mo_y1 = gtree_gtline_top + mo.gtline * gtree_gtline;
 
@@ -144,7 +144,7 @@
             ctx.lineTo(x2, fa_y1);
             ctx.lineTo(fa_x1, fa_y1);
             ctx.stroke();
-            
+
             ctx.beginPath();
             ctx.moveTo(x2, y2);
             ctx.lineTo(x3, y2);
@@ -163,7 +163,7 @@
           gt[i].x1 = x1;
           gt[i].y1 = y1;
 
-          // fill          
+          // fill
           ctx.fillStyle = "white";
           ctx.fillRect(x1, y1, gtree_card_width, gtree_card_height);
           ctx.fillStyle = "black";
