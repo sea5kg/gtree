@@ -9,11 +9,13 @@
     <script src="./js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/index.css">
-    <title>Генеалогическое древо / Famely Tree</title>
+    <script src="./js/localization.js?v=1"></script>
+    <script src="./js/index.js?v=1"></script>
+    <title>Family Tree</title>
   </head>
   <body>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="#">Генеологическое древо</a>
+          <a class="navbar-brand" id="main_menu_item" href="#">Генеологическое древо</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>

@@ -9,12 +9,13 @@
     <script src="./js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/localization.js?v=1"></script>
     <script src="./js/index.js?v=1"></script>
-    <title>Генеалогическое древо / Famely Tree</title>
+    <title>Family Tree</title>
   </head>
   <body>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="#">Генеологическое древо</a>
+          <a class="navbar-brand" id="main_menu_item" href="#">Генеологическое древо</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -39,9 +40,9 @@
       <br>
       <div class="container">
 
-        <a href="/public/tree.png" class="btn btn-primary" download="tree.png">Скачать</a>
-        <div class="btn btn-primary" id="expand_gtree"> + Увеличить</div>
-        <div class="btn btn-primary" style="display: none" id="collapse_gtree">- Уменьшить</div>
+        <a href="/public/tree.png" class="btn btn-primary" id="download_tree" download="tree.png">Скачать</a>
+        <div class="btn btn-primary" id="enlarge_image_size"> + Увеличить</div>
+        <div class="btn btn-primary" style="display: none" id="reduce_image_size">- Уменьшить</div>
         <hr>
         <div class="gtree-container">
           <img id="gtree_image" style="width: 100%"/>

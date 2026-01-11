@@ -9,20 +9,32 @@ function createRandomString(length) {
   return result;
 }
 
+function localize_captions(selected_lang) {
+  document.title = LANG.main_title[selected_lang];
+  $('#main_menu_item').text(LANG.main_title[selected_lang]);
+  $('#enlarge_image_size').text(LANG.enlarge_image_size[selected_lang])
+  $('#reduce_image_size').text(LANG.reduce_image_size[selected_lang])
+  $('#download_tree').text(LANG.download[selected_lang])
+}
+
 // on loaded document
 
 document.addEventListener("DOMContentLoaded", function() {
   $('#gtree_image').attr('src', 'public/tree.png?v1=' + createRandomString(10));
 
-  $('#expand_gtree').unbind().bind('click', function(){
+  $('#enlarge_image_size').unbind().bind('click', function(){
     $('.gtree-container img').css({'width' : ''});
-    $('#collapse_gtree').show();
-    $('#expand_gtree').hide();
+    $('#reduce_image_size').show();
+    $('#enlarge_image_size').hide();
   })
-  $('#collapse_gtree').unbind().bind('click', function(){
+  $('#reduce_image_size').unbind().bind('click', function(){
     $('.gtree-container img').css({'width' : '100%'});
-    $('#collapse_gtree').hide();
-    $('#expand_gtree').show();
+    $('#reduce_image_size').hide();
+    $('#enlarge_image_size').show();
   })
+
+
+  // localization
+  localize_captions('ru');
 });
 
