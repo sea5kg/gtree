@@ -7,10 +7,12 @@ GTree::startAdminPage();
 date_default_timezone_set('UTC');
 
 $data = array();
-$data['persons'] = array();
-$data['photos'] = array();
-
 $conn = GTree::dbConn();
+
+// export persons
+
+$data['persons'] = array();
+
 $stmt = $conn->prepare('SELECT * FROM persons ORDER BY bornyear;');
 $stmt->execute();
 
@@ -67,6 +69,8 @@ foreach ($data['persons'] as $k => $v) {
 
 // export photos
 
+$data['photos'] = array();
+
 $stmt = $conn->prepare('SELECT * FROM photos ORDER BY id;');
 $stmt->execute();
 
@@ -86,6 +90,28 @@ while ($row = $stmt->fetch()) {
         'updated' => $row['updated'],
     );
 }
+
+
+// exports biographies
+
+$data['biographies'] = array();
+
+$stmt = $conn->prepare('SELECT * FROM biographies ORDER BY id;');
+$stmt->execute();
+
+while ($row = $stmt->fetch()) {
+    $id = intval($row['id']);
+    $data['biographies'][] = array(
+        'personid' => $persons_by_ids[$row['personid']],
+        'type' => $row['type'],
+        'year' => $row['year'],
+        'description' => $row['description'],
+        'created' => $row['created'],
+        'updated' => $row['updated'],
+    );
+}
+
+// create zip file
 
 $path_zip = tempnam(sys_get_temp_dir(), "zip");
 
