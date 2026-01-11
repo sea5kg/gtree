@@ -66,7 +66,12 @@ foreach ($data['persons'] as $k => $v) {
 
 $path_zip = tempnam(sys_get_temp_dir(), "zip");
 
-$zip = new ZipArchive;
+// fix Deprecated: ZipArchive::open(): Using empty file as ZipArchive is deprecated
+if (file_exists($path_zip)) {
+    unlink($path_zip);
+}
+
+$zip = new ZipArchive();
 if ($zip->open($path_zip, ZipArchive::CREATE) === TRUE) {
     // Add files to the zip file
     // $zip->addFile('test.txt');
