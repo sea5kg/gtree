@@ -110,7 +110,7 @@ include_once("head.php");
     </div>
 
     <button class="btn btn-primary" name="do_photo_update" >Обновить</button>
-    <?php 
+    <?php
     if ($error != '') {
         echo '<div class="alert alert-danger" style="margin-top: 20px">'.$error.'</div>';
     }

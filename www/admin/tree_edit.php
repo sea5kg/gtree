@@ -45,7 +45,7 @@ include_once("head.php");
           if ($row['bornyear'] == 0) {
             continue;
           }
-          
+
           $minyear = $row['bornyear'] < $minyear ? $row['bornyear'] : $minyear;
           $maxyear = $row['bornyear'] > $maxyear ? $row['bornyear'] : $maxyear;
 
@@ -79,7 +79,7 @@ include_once("head.php");
         echo 'var gtree_gtline_top = '.GTree::$gtree_gtline_top.";\r\n";
         echo 'var gtree_height = '.GTree::calculateHeight().";\r\n";
         echo 'var gtree_width = '.GTree::calculateWidth().";\r\n";
-        
+
         echo 'var gt = '.json_encode($persons, JSON_PRETTY_PRINT)."; \r\n";
     ?>
       var max_gtline = 0;
@@ -93,15 +93,13 @@ include_once("head.php");
         ret = ret * gtree_yearstep + gtree_padding;
         return ret;
       }
-      
-      gtree_height += gtree_gtline;
 
-      
+      gtree_height += gtree_gtline;
 
       var canvas = document.getElementById("gtree");
       var ctx = canvas.getContext("2d");
       canvas.width  = gtree_width;
-      canvas.height = gtree_height; 
+      canvas.height = gtree_height;
       canvas.style.width  = gtree_width + 'px';
       canvas.style.height = gtree_height + 'px';
 
@@ -131,7 +129,7 @@ include_once("head.php");
           ctx.moveTo(0, y1);
           ctx.lineTo(gtree_width, y1);
           ctx.stroke();
-          
+
           ctx.fillText('' + y, x1 + 3, 30);
 
           // console.log(y);
@@ -155,7 +153,7 @@ include_once("head.php");
           ctx.moveTo(x1, gtree_padding + 10);
           ctx.lineTo(x1, gtree_padding + 30);
           ctx.stroke();
-          
+
           ctx.fillText('' + y, x1 + 3, 30);
 
           // console.log(y);
@@ -165,11 +163,11 @@ include_once("head.php");
         // parents
         for (var i in gt) {
           var p = gt[i];
-          
+
           if (p.mother > 0 && p.father > 0) {
             var mo = gt[p.mother];
             var fa = gt[p.father];
-            
+
             var mo_x1 = calcX_in_px(mo.bornyear);
             var mo_y1 = gtree_gtline_top + mo.gtline * gtree_gtline;
 
@@ -195,7 +193,7 @@ include_once("head.php");
             ctx.lineTo(x2, fa_y1);
             ctx.lineTo(fa_x1, fa_y1);
             ctx.stroke();
-            
+
             ctx.beginPath();
             ctx.moveTo(x2, y2);
             ctx.lineTo(x3, y2);
@@ -214,7 +212,7 @@ include_once("head.php");
           gt[i].x1 = x1;
           gt[i].y1 = y1;
 
-          // fill          
+          // fill
           ctx.fillStyle = selectedCard == i ? "#E6ECDF" : "white";
           ctx.fillRect(x1, y1, gtree_card_width, gtree_card_height);
           ctx.fillStyle = "black";
@@ -241,7 +239,7 @@ include_once("head.php");
           }
         }
       }
-      
+
       var selectedCard = -1;
       var movingEnable = false;
 
@@ -289,7 +287,7 @@ include_once("head.php");
             }
             return;
           }
-          
+
           var changesExists = false;
           selectedCard = -1;
           for (var i in gt) {
@@ -347,8 +345,6 @@ include_once("head.php");
 </table>
 
 <?php
-
-
 
 include_once("footer.php");
 

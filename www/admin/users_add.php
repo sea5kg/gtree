@@ -11,7 +11,7 @@ if (isset($_POST['do_user_add'])) {
     $password = $_POST['password'];
     $comment = $_POST['comment'];
     $password_sha1 = sha1($password);
-    
+
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('INSERT INTO users(username, userpass, role, comment) VALUES(?,?,?,?);');
     if (!$stmt->execute(array($username, $password_sha1, 'admin', $comment))) {

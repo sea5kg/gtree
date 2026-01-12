@@ -1,4 +1,4 @@
-<?php 
+<?php
 	date_default_timezone_set('UTC');
 	$dir_login = dirname(__FILE__);
 	include_once($dir_login."/../gtree.php");
@@ -61,7 +61,6 @@
 	}
 ?>
 <?php include_once("head.php"); ?>
-			
 
 	<div class="card card-login mx-auto mt-5">
 		<div class="card-header">Административная панель</div>

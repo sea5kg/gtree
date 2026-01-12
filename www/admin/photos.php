@@ -6,7 +6,7 @@ GTree::startAdminPage();
 
 if (isset($_POST['do_remove_photo'])) {
     $photoid = intval($_POST['photoid']);
-    
+
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('DELETE FROM photos WHERE id = ?;');
     if (!$stmt->execute(array($photoid))) {
@@ -48,7 +48,7 @@ include_once("head.php");
         </tr>
     </thead>
     <tbody>
-  
+
     <?php
 
     $conn = GTree::dbConn();
@@ -63,7 +63,7 @@ include_once("head.php");
 
         if (is_numeric($filter)) {
             $filter_int = intval($filter);
-            
+
             $filters[] = '(year = ?)';
             $values[] = $filter_int;
         }
@@ -74,7 +74,7 @@ include_once("head.php");
     } else {
         $filters = '';
     }
-    
+
     $query = 'SELECT * FROM photos '.$filters.' ORDER BY year';
     // echo $query;
     // $filter
@@ -94,7 +94,7 @@ include_once("head.php");
         echo '
         <tr>
             <td style="text-align: center;">
-                
+
                 [photo#'.$photoid.'] <br/>
                 <img width="300px" width="200px" src="../public/'.$uid.'.jpg"/>
             </td>
@@ -106,7 +106,7 @@ include_once("head.php");
                 <hr>
                 <a class="btn btn-primary" href="photos_edit.php?photoid='.$photoid.'">Изменить</a>
                 <br><br>
-                
+
                     <form action="photos.php" method="POST" class="alert alert-danger">
                         Осторожно:
                         <input type="hidden" name="photoid" value="'.$photoid.'"/>

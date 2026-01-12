@@ -192,12 +192,12 @@ include_once("head.php");
         echo '<div class="alert alert-danger" style="margin-top: 20px">'.$error.'</div>';
     }
     ?>
-    
+
     <div class="row">
         <div class="col-sm-4">
             <div class="form-group">
                 <label>Фамилия</label>
-                <input class="form-control" name="lastname" value="<?php echo $lastname; ?>" type="text"/>            
+                <input class="form-control" name="lastname" value="<?php echo $lastname; ?>" type="text"/>
             </div>
         </div>
         <div class="col-sm-4">
@@ -255,7 +255,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">Месяц</label>
                     <select class="form-control" name="bornmonth">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             foreach(GTree::$MONTHES as $k => $v) {
                                 echo '<option value="'.$k.'" '.($bornmonth == $k ? 'selected' : '').'>'.$v.'</option>';
@@ -338,7 +338,7 @@ include_once("head.php");
             </div>
         </div>
     </div>
-    
+
     <div class="form-group">
         <div class="row">
             <div class="col-sm">
@@ -377,7 +377,7 @@ include_once("head.php");
     </div>
 
     <button class="btn btn-primary" name="do_person_update" >Обновить</button>
-    
+
 </form>
 
 <!-- Select Person -->
@@ -446,7 +446,7 @@ function showPersonsList(sex, current_id, callback_done) {
     $('#modalSelectPerson').unbind().on('shown.bs.modal', function() {
         $('#selectPersonsList').html('');
         $('#selectPersonsList').append('<option ' + (current_id == 0 ? 'selected' : '' )  + ' value="0">-</option>');
-        
+
         for (var i in persons_list) {
             if (persons_list[i].sex == sex) {
                 var selected_opt = '';
@@ -460,7 +460,7 @@ function showPersonsList(sex, current_id, callback_done) {
         $("#searchPersonsInAList").val('');
         updatePersonsList('');
         console.log('shown.bs.modal');
-        $("#searchPersonsInAList").unbind().bind('keyup', function() { 
+        $("#searchPersonsInAList").unbind().bind('keyup', function() {
             updatePersonsList($(this).val());
         });
 

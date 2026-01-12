@@ -1,4 +1,4 @@
-<?php 
+<?php
 	date_default_timezone_set('UTC');
 	$dir_login = dirname(__FILE__);
 	include_once($dir_login."/../gtree.php");

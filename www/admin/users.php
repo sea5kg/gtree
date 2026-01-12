@@ -11,7 +11,7 @@ if (isset($_POST['do_remove_user'])) {
         header('Location: ./users.php');
 		exit;
     }
-    
+
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('DELETE FROM users WHERE id = ?;');
     if (!$stmt->execute(array($userid))) {
@@ -40,7 +40,7 @@ include_once("head.php");
         </tr>
     </thead>
     <tbody>
-    
+
 <?php
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('SELECT * FROM users');

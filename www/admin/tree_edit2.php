@@ -114,7 +114,6 @@ include_once("head.php");
         console.log("max_tree_y = ", max_tree_y);
         console.log("gtree_height = ", gtree_height);*/
       }
-      
 
       for (var i in gt) {
         gt[i].highlight = false;
@@ -123,7 +122,7 @@ include_once("head.php");
       function calcX_in_px(tree_x) {
         return gtree_padding + tree_x * gtree_gtcol;
       }
-      
+
       function calcY_in_px(tree_y) {
         return gtree_padding + tree_y * gtree_gtline;
       }
@@ -161,7 +160,6 @@ include_once("head.php");
         ctx.lineWidth = 3;
 
         ctx.font = "16px Arial";
-        
 
         ctx.lineWidth = 1;
 
@@ -174,7 +172,7 @@ include_once("head.php");
           gt[i].x1 = x1;
           gt[i].y1 = y1;
 
-          // fill          
+          // fill
           ctx.fillStyle = selectedCard == i ? "#E6ECDF" : "white";
           ctx.fillRect(x1, y1, gtree_card_width, gtree_card_height);
           ctx.fillStyle = "black";
@@ -205,11 +203,11 @@ include_once("head.php");
         ctx.lineWidth = 1;
         for (var i in gt) {
           var p = gt[i];
-          
+
           if (p.mother > 0 && p.father > 0) {
             var mo = gt[p.mother];
             var fa = gt[p.father];
-            
+
             var mo_x1 = calcX_in_px(mo.tree_x);
             var mo_y1 = calcY_in_px(mo.tree_y);
 
@@ -244,7 +242,7 @@ include_once("head.php");
             ctx.lineTo(fa_x1, y2);
             ctx.lineTo(fa_x1, fa_y1);
             ctx.stroke();
-            
+
             ctx.fillRect(x2-3, y2-3, 6, 6);
             ctx.fillRect(x2-3, y3-3, 6, 6);
 
@@ -262,11 +260,11 @@ include_once("head.php");
             ctx.lineTo(x1, y1);
             ctx.lineTo(x1-6, y1-12);
             ctx.fill();
-            
+
           }
         }
       }
-     
+
       var selectedCard = -1;
       var movingEnable = false;
 
@@ -315,7 +313,7 @@ include_once("head.php");
             }
             return;
           }
-          
+
           var changesExists = false;
           selectedCard = -1;
           for (var i in gt) {

@@ -31,7 +31,7 @@ if (isset($_GET['userid'])) {
 if (isset($_POST['do_user_update'])) {
     $userid = intval($_POST['userid']);
     $comment = $_POST['comment'];
-    
+
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('UPDATE users SET comment = ? WHERE id = ?;');
     if (!$stmt->execute(array($comment, $userid))) {
@@ -46,7 +46,7 @@ if (isset($_POST['do_user_update'])) {
 if (isset($_POST['do_user_reset_password'])) {
     $userid = intval($_POST['userid']);
     $password_sha1 = sha1($_POST['password']);
-    
+
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('UPDATE users SET userpass = ? WHERE id = ?;');
     if (!$stmt->execute(array($password_sha1, $userid))) {
@@ -84,7 +84,7 @@ include_once("head.php");
         <textarea class="form-control" name="comment"><?php echo htmlspecialchars($comment); ?></textarea>
     </div>
     <button class="btn btn-primary" name="do_user_update">Обновить</button>
-    <?php 
+    <?php
     if ($error != '') {
         echo '<div class="alert alert-danger" style="margin-top: 20px">'.$error.'</div>';
     }

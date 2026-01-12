@@ -22,7 +22,7 @@ if (isset($_POST['do_photo_add'])) {
     } else if ($year_notexactly == 'on') {
         $year_notexactly = 'yes';
     }
-    
+
     $uid = GTree::getRandomString(68);
 
     $path_img = $_FILES['photo_file']['tmp_name'];
@@ -115,7 +115,7 @@ include_once("head.php");
     </div>
 
     <button class="btn btn-primary" name="do_photo_add" >загрузить</button>
-    <?php 
+    <?php
     if ($error != '') {
         echo '<div class="alert alert-danger" style="margin-top: 20px">'.$error.'</div>';
     }

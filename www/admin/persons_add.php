@@ -170,11 +170,11 @@ include_once("head.php");
             </div>
         </div>
     </div>
-    
+
     <div class="form-group">
         <label for="password">Приватные данные</label>
         <select class="form-control" name="private">
-            <option value="no">Нет</option>    
+            <option value="no">Нет</option>
             <option value="yes">Да</option>
         </select>
     </div>
@@ -186,7 +186,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">День</label>
                     <select class="form-control" name="bornday">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             for ($i = 1; $i <= 31; $i++) {
                                 echo '<option value="'.$i.'">'.$i.'</option>';
@@ -199,7 +199,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">Месяц</label>
                     <select class="form-control" name="bornmonth">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             foreach(GTree::$MONTHES as $k => $v) {
                                 echo '<option value="'.$k.'">'.$v.'</option>';
@@ -212,7 +212,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">Год</label>
                     <select class="form-control" name="bornyear">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             for ($i = 1800; $i < 2050; $i++) {
                                 echo '<option value="'.$i.'">'.$i.'</option>';
@@ -238,7 +238,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">День</label>
                     <select class="form-control" name="dayofdeath">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             for ($i = 1; $i <= 31; $i++) {
                                 echo '<option value="'.$i.'">'.$i.'</option>';
@@ -251,7 +251,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">Месяц</label>
                     <select class="form-control" name="monthofdeath">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             foreach(GTree::$MONTHES as $k => $v) {
                                 echo '<option value="'.$k.'">'.$v.'</option>';
@@ -264,7 +264,7 @@ include_once("head.php");
                 <div class="form-group">
                     <label for="password">Год</label>
                     <select class="form-control" name="yearofdeath">
-                        <?php 
+                        <?php
                             echo '<option value="0">-</option>';
                             for ($i = 1800; $i < 2050; $i++) {
                                 echo '<option value="'.$i.'">'.$i.'</option>';
@@ -282,7 +282,7 @@ include_once("head.php");
             </div>
         </div>
     </div>
-    
+
     <div class="form-group">
         <div class="row">
             <div class="col-sm">
@@ -320,7 +320,7 @@ include_once("head.php");
         </div>
     </div>
     <button class="btn btn-primary" name="do_person_add" >Добавить</button>
-    
+
 </form>
 
 
@@ -358,10 +358,9 @@ $('#sex').unbind().bind('change', function() {
     }
 })
 
-<?php 
+<?php
     echo 'var persons_list = '.json_encode($persons_list).';';
 ?>
-
 
 function updatePersonsList(search) {
     search = search.toLowerCase();
@@ -379,12 +378,11 @@ function updatePersonsList(search) {
     }
 }
 
-
 function showPersonsList(sex, current_id, callback_done) {
     $('#modalSelectPerson').unbind().on('shown.bs.modal', function() {
         $('#selectPersonsList').html('');
         $('#selectPersonsList').append('<option ' + (current_id == 0 ? 'selected' : '' )  + ' value="0">-</option>');
-        
+
         for (var i in persons_list) {
             if (persons_list[i].sex == sex) {
                 var selected_opt = '';

@@ -17,7 +17,7 @@ function update0001($conn){
         error_log(print_r($stmt->errorInfo(),true));
         return false;
     }
-    
+
     $stmt = $conn->prepare("
         CREATE TABLE `users` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -30,14 +30,14 @@ function update0001($conn){
             UNIQUE(`username`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8, AUTO_INCREMENT=1;
     ");
-    
+
     if (!$stmt->execute()) {
         error_log(print_r($stmt->errorInfo(),true));
         return false;
     }
 
     $stmt = $conn->prepare("INSERT INTO users(username,userpass,role,comment) VALUES(?,?,?,?)");
-    
+
     if (!$stmt->execute(array('admin','d033e22ae348aeb5660fc2140aec35850c4da997','admin', ''))) {
         error_log(print_r($stmt->errorInfo(),true));
         return false;

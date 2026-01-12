@@ -1,7 +1,7 @@
 <?php
 
 function update0008($conn){
-    
+
     $stmt = $conn->prepare("
         ALTER TABLE `photos` DROP `year_notexactly`;
     ");

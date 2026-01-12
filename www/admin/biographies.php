@@ -104,7 +104,7 @@ if (isset($_POST['do_biography_update'])) {
     $bio_type = $_POST['bio_type'];
     $year = intval($_POST['year']);
     $description = $_POST['description'];
-    
+
     $biography_id = 0;
     $conn = GTree::dbConn();
     $stmt = $conn->prepare('SELECT * FROM biographies WHERE personid = ? AND `type` = ? AND year = ?');
@@ -201,8 +201,8 @@ include_once("head.php");
         <h6 class="card-subtitle mb-2 text-muted">Годы жизни: 
             <?php echo $bornyear.$bornyear_notexactly.' - '.$yearofdeath.$yearofdeath_notexactly; ?>
         </h6>
-        
-        Отец: <?php 
+
+        Отец: <?php
             if ($father_full != null) {
                 echo '<a href="biographies.php?personid='.$father_full['id'].'" class="btn btn-link">'.$father_full['caption'].'</a>';
             } else {

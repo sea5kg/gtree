@@ -37,7 +37,7 @@ function update_or_insert($p) {
 
     $query = "";
     if ($row = $stmt->fetch()) {
-        $query = "UPDATE persons SET 
+        $query = "UPDATE persons SET
             fullname = ?,
             firstname = ?,
             secondname = ?,
@@ -58,7 +58,7 @@ function update_or_insert($p) {
             tree_y = ?,
             bornyear_notexactly = ?,
             yearofdeath_notexactly = ?
-        WHERE 
+        WHERE
             uid = ?
         ";
     } else {
