@@ -29,7 +29,7 @@
             <a class="nav-link" href="./?page=tree2">Дерево 2</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="persons.php">Персоны</a>
+            <a class="nav-link" href="./?page=persons">Персоны (<div class="persons-count">0</div>)</a>
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="./?page=contacts">Обратная связь</a>
@@ -62,6 +62,21 @@
       <a href="mailto:sea-kg@ya.ru">sea-kg@ya.ru</a><br>
       Или в телеграм:<br>
       <a href="https://t.me/sea5kg">https://t.me/sea5kg</a><br>
+    </div>
+
+    <div class="container gtree-page-container" style="display: none" id="page_persons">
+      <br>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="./?page=persons">Персоны (<div class="persons-count">0</div>)</a></li>
+          <li class="breadcrumb-item active" id="persons_filtered" style="display: none" aria-current="page">Отфильтровано: 111</li>
+        </ol>
+      </nav>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Filter</span>
+        <input type="text" class="form-control" id="persons_filter" placeholder="Filter..." aria-label="Username" aria-describedby="basic-addon1">
+      </div>
+
     </div>
 
   </body>

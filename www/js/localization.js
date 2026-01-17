@@ -14,5 +14,13 @@ var LANG = {
     "download": {
         "ru": "Скачать",
         "en": "Download",
-    }
+    },
+    "father": {
+        "ru": "Отец",
+        "en": "Father",
+    },
+    "mother": {
+        "ru": "Мать",
+        "en": "Mother",
+    },
 };
