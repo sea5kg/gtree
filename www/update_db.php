@@ -64,7 +64,7 @@ while (file_exists($curdir_update_db.'/db_updates/'.$fileupdate)) {
 			$response['current_db_ver'] = $current_db_ver+1;
 			echo "Installed update ".($current_db_ver+1)."\n";
 		} else {
-			StaticLib::error(500, "Failed update");
+			GTree::error(500, "Failed update");
 			exit(1);
 		}
 	}
