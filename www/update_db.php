@@ -36,7 +36,7 @@ echo "OK.\n";
 
 $current_db_ver = 0;
 
-$stmt = $conn->prepare('SELECT * FROM updates ORDER BY dt, version DESC LIMIT 0,1');
+$stmt = $conn->prepare('SELECT * FROM updates ORDER BY version DESC LIMIT 0,1');
 $stmt->execute(array());
 
 if ($row = $stmt->fetch()) {
