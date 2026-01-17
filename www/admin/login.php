@@ -53,7 +53,7 @@
 
 	}
 
-	if (isset($_COOKIE['gt_admin_token']) && !StaticLib::isAuthorized()) {
+	if (isset($_COOKIE['gt_admin_token']) && !GTree::isAuthorized()) {
 		unset($_COOKIE['gt_admin_token']);
 		setcookie("gt_admin_token", null, time()-86400, '/'); // remove cookie
 		header('Location: ./?');
