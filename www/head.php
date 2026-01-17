@@ -32,7 +32,7 @@
                 <a class="nav-link" href="persons.php">Персоны</a>
               </li>
               <li class="nav-item active">
-                <a class="nav-link" href="contact.php">Обратная связь</a>
+                <a class="nav-link" href="./?page=contacts">Обратная связь</a>
               </li>
             </ul>
           </div>
