@@ -1,4 +1,4 @@
-#include "gtree_http_server.h"
+#include "web_server.h"
 
 // #include "WebSocketServer.h"
 #include "EventLoop.h"
@@ -11,18 +11,17 @@
 using namespace hv;
 
 
-Ctf01dHttpServer::Ctf01dHttpServer() {
-    TAG = "Ctf01dHttpServer";
+WebServer::WebServer() {
+    TAG = "WebServer";
     m_pConfig = findWsjcppEmploy<EmployConfig>();
     // m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
     // m_pEmployDatabase = findWsjcppEmploy<EmployDatabase>();
     // m_pTeamLogos = findWsjcppEmploy<EmployTeamLogos>();
-    m_sScoreboardHtmlFolder = m_pConfig->scoreboardHtmlFolder();
 
     {
         logger_t* pLogger = hv_default_logger();
         // logger_set_max_filesize(pLogger, 102400);
-        std::string sLogDirPath = m_pConfig->getWorkDir() + "/hv_logs";
+        std::string sLogDirPath = m_pConfig->getLogDir() + "/hv";
         if (!WsjcppCore::dirExists(sLogDirPath)) {
             WsjcppCore::makeDir(sLogDirPath);
         }
@@ -34,12 +33,6 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     m_sTeamLogoPrefix = "/team-logo/";
     m_nTeamLogoPrefixLength = m_sTeamLogoPrefix.size();
 
-    m_jsonGame["game_name"] = m_pConfig->gameName();
-    m_jsonGame["game_start"] = WsjcppCore::formatTimeUTC(m_pConfig->gameStartUTCInSec()) + " (UTC)";
-    m_jsonGame["game_end"] = WsjcppCore::formatTimeUTC(m_pConfig->gameEndUTCInSec()) + " (UTC)";
-    m_jsonGame["game_has_coffee_break"] = m_pConfig->gameHasCoffeeBreak();
-    m_jsonGame["game_coffee_break_start"] = WsjcppCore::formatTimeUTC(m_pConfig->gameCoffeeBreakStartUTCInSec()) + " (UTC)";
-    m_jsonGame["game_coffee_break_end"] = WsjcppCore::formatTimeUTC(m_pConfig->gameCoffeeBreakEndUTCInSec()) + " (UTC)";
     m_jsonGame["teams"] = nlohmann::json::array();
     m_jsonGame["services"] = nlohmann::json::array();
 
@@ -52,11 +45,11 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     // static files
     m_pHttpService->document_root = "./html";
 
-    // m_pHttpService->GET("/api/", std::bind(&Ctf01dHttpServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
-    // m_pHttpService->GET("/api/v1/", std::bind(&Ctf01dHttpServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
+    // m_pHttpService->GET("/api/", std::bind(&WebServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
+    // m_pHttpService->GET("/api/v1/", std::bind(&WebServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
 
-    m_pHttpService->GET("*", std::bind(&Ctf01dHttpServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
-    // m_pHttpService->GET("/admin*", std::bind(&Ctf01dHttpServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
+    m_pHttpService->GET("*", std::bind(&WebServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
+    // m_pHttpService->GET("/admin*", std::bind(&WebServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
 
 
     // m_pHttpService->GET("/get", [](HttpRequest* req, HttpResponse* resp) {
@@ -68,20 +61,20 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     // });
 }
 
-hv::HttpService *Ctf01dHttpServer::getService() {
+hv::HttpService *WebServer::getService() {
     return m_pHttpService;
 }
 
-int Ctf01dHttpServer::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
+int WebServer::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
     return resp->Json(m_pHttpService->Paths());
 }
 
-int Ctf01dHttpServer::httpAdmin(HttpRequest* req, HttpResponse* resp) {
+int WebServer::httpAdmin(HttpRequest* req, HttpResponse* resp) {
     std::string str = req->path + " match /admin*";
     return resp->String(str);
 }
 
-int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
+int WebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     std::string sOriginalRequestPath = req->path;
     std::string sRequestPath;
 
@@ -158,7 +151,7 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     return 404; // Not found
 }
 
-// int Ctf01dHttpServer::admin(const std::string &sWorkerId, WsjcppLightWebHttpRequest *pRequest){
+// int WebServer::admin(const std::string &sWorkerId, WsjcppLightWebHttpRequest *pRequest){
 //     std::string _tag = TAG + "-" + sWorkerId;
 //     std::string sRequestPath = pRequest->getRequestPath();
 //     sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
@@ -181,22 +174,22 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
 // }
 
 
-int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
+int WebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     auto now = std::chrono::system_clock::now().time_since_epoch();
     int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
 
-    if (nCurrentTimeSec < m_pConfig->gameStartUTCInSec()) {
-        const std::string sErrorMsg = "Error(-8): Game not started yet";
-        WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
-    }
+    // if (nCurrentTimeSec < m_pConfig->gameStartUTCInSec()) {
+    //     const std::string sErrorMsg = "Error(-8): Game not started yet";
+    //     WsjcppLog::err(TAG, sErrorMsg);
+    //     return resp->String(sErrorMsg, 400);
+    // }
 
     std::string sResponse = "Accepted: Recieved flag {} from {} (Accepted)";
     WsjcppLog::ok(TAG, sResponse);
     return resp->Data((void *)(sResponse.c_str()), sResponse.size(), false, TEXT_PLAIN);
 }
 
-int Ctf01dHttpServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
+int WebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
     // m_pTeamLogos->updateLastWriteTime();
     // nlohmann::json jsonScoreboard = m_pConfig->scoreboard()->toJson();
     // m_pTeamLogos->updateScorebordJson(jsonScoreboard);

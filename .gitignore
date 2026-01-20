@@ -12,3 +12,5 @@ www/public/tree2.png
 
 # docker
 /docker_tmp
+/data/logs
+*.log

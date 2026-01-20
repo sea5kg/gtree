@@ -1,0 +1,4 @@
+web-port1: 10555
+log-dir: ./logs
+log-rotation-period: 86400 # every 24h
+db-dir: ./dbs

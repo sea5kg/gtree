@@ -1,48 +1,33 @@
-// #include <argument_processor_ctf01d_main.h>
-// #include <wsjcpp_core.h>
-// #include <employ_config.h>
+#include <wsjcpp_core.h>
+#include <employ_config.h>
+#include "web_server.h"
+#include "WebSocketServer.h"  // libhv
 
 int main(int argc, const char* argv[]) {
-    // std::string TAG = "MAIN";
-    // std::string appName = std::string(WSJCPP_APP_NAME);
-    // std::string appVersion = std::string(WSJCPP_APP_VERSION);
+    WsjcppLog::setEnableLogFile(false);
 
-    // // previous logs in current directory
-    // if (!WsjcppCore::dirExists(".ctf01d")) {
-    //     WsjcppCore::makeDir(".ctf01d");
-    // }
-    // WsjcppLog::setPrefixLogFile("ctf01d");
-    // WsjcppLog::setLogDirectory(".ctf01d");
+    WsjcppEmployeesInit empls({}, false);
+    if (!empls.inited) {
+        return -1;
+    }
 
-    // // try find config.yml
-    // std::vector<std::string> vPossibleFolders = {
-    //     "./",
-    //     "./data_sample/",
-    //     "/root/data/"
-    // };
+    EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
 
-    // for (int i = 0; i < vPossibleFolders.size(); i++) {
-    //     std::string sWorkDir = vPossibleFolders[i];
-    //     if (sWorkDir[0] != '/') {
-    //         sWorkDir = WsjcppCore::getCurrentDirectory() + "/" + sWorkDir;
-    //     }
-    //     sWorkDir = WsjcppCore::doNormalizePath(sWorkDir);
-    //     if (WsjcppCore::fileExists(sWorkDir + "/config.yml")) {
-    //         std::cout << "Automatically detected workdir: " << sWorkDir << std::endl;
-    //         EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-    //         pConfig->setWorkDir(sWorkDir);
-    //         break;
-    //     }
-    // }
+    WsjcppLog::info("main", "Start web server on http://localhost:" + std::to_string(pConfig->getWebPort()));
+    WebServer httpServer;
+    hv::HttpService *pRouter = httpServer.getService();
+    hv::HttpServer server(pRouter);
+    server.setPort(pConfig->getWebPort());
+    server.setThreadNum(1);
+    server.run();
 
-    // // websocket_server_t server;
-    // // server.service = pRouter;
-    // // server.port = 12345;
-    // // // server.ws = pWs;
-    // // websocket_server_run(&server);
+    // getLogDir()
 
-    // ArgumentProcessorCtf01dMain *pMain = new ArgumentProcessorCtf01dMain();
-    // WsjcppArguments prog(argc, argv, pMain);
-    // int nRet = prog.exec();
-    // return nRet;
+    // websocket_server_t server;
+    // server.service = pRouter;
+    // server.port = 12345;
+    // // server.ws = pWs;
+    // websocket_server_run(&server);
+
+    return 0;
 }

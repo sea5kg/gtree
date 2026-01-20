@@ -15,42 +15,13 @@ set(EXECUTABLE_OUTPUT_PATH ${gtree_SOURCE_DIR})
 
 # include header dirs
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
-# list (APPEND WSJCPP_INCLUDE_DIRS "src/argument_processors")
-# list (APPEND WSJCPP_INCLUDE_DIRS "src/checker")
-# list (APPEND WSJCPP_INCLUDE_DIRS "src/scoreboard")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/employees")
-# list (APPEND WSJCPP_INCLUDE_DIRS "src/store")
-# list (APPEND WSJCPP_INCLUDE_DIRS "src/3rdparty/sqlite3/src")
-
-# argument processors
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_check.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_clean.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_services.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_start.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_teams.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_version.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_web_test.cpp")
 
 # employees
-# list (APPEND WSJCPP_SOURCES "./src/employees/employ_team_logos.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/employees/employ_flags.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/employees/employ_scoreboard.cpp")
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_config.cpp")
-# list (APPEND WSJCPP_SOURCES "./src/employees/employ_database.cpp")
-
-# checker
-# list (APPEND WSJCPP_SOURCES "src/checker/dorunchecker.cpp")
-# list (APPEND WSJCPP_SOURCES "src/checker/service_checker_thread.cpp")
 
 # http_server
-list (APPEND WSJCPP_SOURCES "src/gtree_http_server.cpp")
-
-# scoreboard
-# list (APPEND WSJCPP_SOURCES "src/scoreboard/ctf01d_scoreboard.cpp")
-
-# store
-# list (APPEND WSJCPP_SOURCES "src/store/ctf01d_store.cpp")
-# list (APPEND WSJCPP_SOURCES "src/store/http_downloader.cpp")
+list (APPEND WSJCPP_SOURCES "src/web_server.cpp")
 
 # main
 list (APPEND WSJCPP_SOURCES "src/main.cpp")

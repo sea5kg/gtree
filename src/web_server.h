@@ -5,9 +5,9 @@
 #include "HttpService.h"
 #include <employ_config.h>
 
-class Ctf01dHttpServer {
+class WebServer {
     public:
-        Ctf01dHttpServer();
+        WebServer();
         hv::HttpService *getService();
         int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
         int httpAdmin(HttpRequest* req, HttpResponse* resp);
