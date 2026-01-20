@@ -25,7 +25,7 @@ class WebServer {
         EmployConfig *m_pConfig;
 
         std::string m_sIndexHtml;
-        std::string m_sScoreboardHtmlFolder;
+        std::string m_sHtmlFolder;
 
         nlohmann::json m_jsonGame;
         std::string m_sCacheResponseGameJson;

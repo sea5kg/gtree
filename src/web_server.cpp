@@ -43,7 +43,8 @@ WebServer::WebServer() {
     m_pHttpService = new HttpService();
 
     // static files
-    m_pHttpService->document_root = "./html";
+    m_pHttpService->document_root = m_pConfig->getWebDir();
+    m_sHtmlFolder = m_pConfig->getWebDir();
 
     // m_pHttpService->GET("/api/", std::bind(&WebServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
     // m_pHttpService->GET("/api/v1/", std::bind(&WebServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
@@ -137,7 +138,7 @@ int WebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
 
     // TODO
     WsjcppLog::info(TAG, "Request path: " + sRequestPath);
-    std::string sFilePath = sRequestPath = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder + "/" + sRequestPath);
+    std::string sFilePath = sRequestPath = WsjcppCore::doNormalizePath(m_sHtmlFolder + "/" + sRequestPath);
     if (WsjcppCore::fileExists(sFilePath)) { // TODO check the file exists not dir
         return resp->File(sFilePath.c_str());
     }

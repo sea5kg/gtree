@@ -203,6 +203,12 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
     return false;
   }
 
+  m_sWebDir = handleRelatedDirPath(yamlConfig["web-dir"].valStr(), "/html");
+  if (!WsjcppCore::dirExists(m_sWebDir)) {
+    WsjcppLog::err(TAG, "Error: Folder '" + m_sWebDir + "' does not exists and could not created, please check access rights to parent folder.");
+    return false;
+  }
+
   // TODO
   // this->doExtractFilesIfNotExists();
 
@@ -228,6 +234,10 @@ const std::string &EmployConfig::getDatabaseDir() {
 
 const std::string &EmployConfig::getLogDir() {
     return m_sLogDir;
+}
+
+const std::string &EmployConfig::getWebDir() {
+  return m_sWebDir;
 }
 
 void EmployConfig::doExtractFilesIfNotExists() {

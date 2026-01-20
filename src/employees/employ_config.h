@@ -88,6 +88,7 @@ public:
   int getWebPort();
   const std::string &getDatabaseDir();
   const std::string &getLogDir();
+  const std::string &getWebDir();
 
   // TODO
   void doExtractFilesIfNotExists();
@@ -100,6 +101,7 @@ private:
   std::string TAG;
   std::string m_sWorkDir;
   std::string m_sLogDir;
+  std::string m_sWebDir;
   int m_nWebPort;
   std::string m_sDatabaseDir;
 };
