@@ -1,3 +1,28 @@
+/* MIT License
+
+* Copyright (c) 2019-2025 Evgenii Sopov
+
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+// https://github.com/sea5kg/gtree
+
 #include "web_server.h"
 
 // #include "WebSocketServer.h"
@@ -12,124 +37,80 @@ using namespace hv;
 
 
 WebServer::WebServer() {
-    TAG = "WebServer";
-    m_pConfig = findWsjcppEmploy<EmployConfig>();
-    // m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
-    // m_pEmployDatabase = findWsjcppEmploy<EmployDatabase>();
-    // m_pTeamLogos = findWsjcppEmploy<EmployTeamLogos>();
-
-    {
-        logger_t* pLogger = hv_default_logger();
-        // logger_set_max_filesize(pLogger, 102400);
-        std::string sLogDirPath = m_pConfig->getLogDir() + "/hv";
-        if (!WsjcppCore::dirExists(sLogDirPath)) {
-            WsjcppCore::makeDir(sLogDirPath);
-        }
-        std::string sLogFilePath = sLogDirPath + "/http_" + WsjcppCore::getCurrentTimeForFilename() + ".log";
-        logger_set_file(pLogger, sLogFilePath.c_str());
+  TAG = "WebServer";
+  m_pConfig = findWsjcppEmploy<EmployConfig>();
+  {
+    logger_t* pLogger = hv_default_logger();
+    // logger_set_max_filesize(pLogger, 102400);
+    std::string sLogDirPath = m_pConfig->getLogDir() + "/hv";
+    if (!WsjcppCore::dirExists(sLogDirPath)) {
+        WsjcppCore::makeDir(sLogDirPath);
     }
+    std::string sLogFilePath = sLogDirPath + "/http_" + WsjcppCore::getCurrentTimeForFilename() + ".log";
+    logger_set_file(pLogger, sLogFilePath.c_str());
+  }
 
-    m_sApiPathPrefix = "/api/v1/";
-    m_sTeamLogoPrefix = "/team-logo/";
-    m_nTeamLogoPrefixLength = m_sTeamLogoPrefix.size();
+  m_sApiPathPrefix = "/api/v1/";
+  // m_sTeamLogoPrefix = "/team-logo/";
+  // m_nTeamLogoPrefixLength = m_sTeamLogoPrefix.size();
 
-    m_jsonGame["teams"] = nlohmann::json::array();
-    m_jsonGame["services"] = nlohmann::json::array();
+  m_pHttpService = new HttpService();
 
-    m_sCacheResponseGameJson = m_jsonGame.dump();
-    m_sCacheResponseTeamsJson = m_jsonTeams.dump();
-    // m_sCacheResponseServicesJson =
+  // static files
+  m_pHttpService->document_root = m_pConfig->getWebDir();
+  m_sHtmlFolder = m_pConfig->getWebDir();
 
-    m_pHttpService = new HttpService();
-
-    // static files
-    m_pHttpService->document_root = m_pConfig->getWebDir();
-    m_sHtmlFolder = m_pConfig->getWebDir();
-
-    // m_pHttpService->GET("/api/", std::bind(&WebServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
-    // m_pHttpService->GET("/api/v1/", std::bind(&WebServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
-
-    m_pHttpService->GET("*", std::bind(&WebServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
-    // m_pHttpService->GET("/admin*", std::bind(&WebServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
-
-
-    // m_pHttpService->GET("/get", [](HttpRequest* req, HttpResponse* resp) {
-    //     resp->json["origin"] = req->client_addr.ip;
-    //     resp->json["url"] = req->url;
-    //     resp->json["args"] = req->query_params;
-    //     resp->json["headers"] = req->headers;
-    //     return 200;
-    // });
+  m_pHttpService->GET("*", std::bind(&WebServer::httpGetRequests, this, std::placeholders::_1, std::placeholders::_2));
+  m_pHttpService->POST("*", std::bind(&WebServer::httpPostRequests, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 hv::HttpService *WebServer::getService() {
     return m_pHttpService;
 }
 
-int WebServer::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
-    return resp->Json(m_pHttpService->Paths());
-}
-
-int WebServer::httpAdmin(HttpRequest* req, HttpResponse* resp) {
-    std::string str = req->path + " match /admin*";
-    return resp->String(str);
-}
-
-int WebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
-    std::string sOriginalRequestPath = req->path;
-    std::string sRequestPath;
+int WebServer::httpGetRequests(HttpRequest* req, HttpResponse* resp) {
 
     // remove get params from path
-    std::size_t nFoundGetParams = sOriginalRequestPath.rfind("?");
-    if (nFoundGetParams != std::string::npos) {
-        sRequestPath = sOriginalRequestPath.substr(0, nFoundGetParams);
-    } else {
-        sRequestPath = sOriginalRequestPath;
-    }
-    sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
+    std::string sRequestPath = normalizeRequestPath(req);
 
-    // WsjcppLog::info(TAG, "sRequestPath = " + sRequestPath);
-    if (sRequestPath == "/flag") {
-        return this->httpApiV1Flag(req, resp);
-    }
-
-    if (sRequestPath.rfind(m_sTeamLogoPrefix, 0) == 0) {
-        std::string sTeamId = sRequestPath.substr(m_nTeamLogoPrefixLength, sRequestPath.length() - m_nTeamLogoPrefixLength);
-        // Ctf01dTeamLogo *pLogo = m_pTeamLogos->findTeamLogo(sTeamId);
-        // if (pLogo == nullptr) {
-        //     return 404;
-        // }
-        // resp->SetContentTypeByFilename(pLogo->sFilename.c_str());
-        // return resp->Data(
-        //     pLogo->pBuffer,
-        //     pLogo->nBufferSize,
-        //     true, // nocopy
-        //     resp->content_type
-        // );
-    }
+    // if (sRequestPath.rfind(m_sTeamLogoPrefix, 0) == 0) {
+    //     std::string sTeamId = sRequestPath.substr(m_nTeamLogoPrefixLength, sRequestPath.length() - m_nTeamLogoPrefixLength);
+    //     Ctf01dTeamLogo *pLogo = m_pTeamLogos->findTeamLogo(sTeamId);
+    //     if (pLogo == nullptr) {
+    //         return 404;
+    //     }
+    //     resp->SetContentTypeByFilename(pLogo->sFilename.c_str());
+    //     return resp->Data(
+    //         pLogo->pBuffer,
+    //         pLogo->nBufferSize,
+    //         true, // nocopy
+    //         resp->content_type
+    //     );
+    // }
 
     if (sRequestPath.rfind(m_sApiPathPrefix, 0) == 0) {
-        if (sRequestPath == "/api/v1/game") {
-            resp->SetContentTypeByFilename("game.json");
-            std::cout << m_sCacheResponseGameJson << std::endl;
-            return resp->Data(
-                (void *)(m_sCacheResponseGameJson.c_str()),
-                m_sCacheResponseGameJson.length(),
-                true,
-                resp->content_type
-            );
-        } else if (sRequestPath == "/api/v1/scoreboard") {
-            return this->httpApiV1Scoreboard(req, resp);
-        } else if (sRequestPath == "/api/v1/teams") {
-            resp->SetContentTypeByFilename("teams.json");
-            return resp->Data(
-                (void *)(m_sCacheResponseTeamsJson.c_str()),
-                m_sCacheResponseTeamsJson.length(),
-                true,
-                resp->content_type
-            );
-        }
-        return this->httpApiV1GetPaths(req, resp);
+        return httpPostRequests(req, resp);
+        // if (sRequestPath == "/api/v1/game") {
+        //     resp->SetContentTypeByFilename("game.json");
+        //     std::cout << m_sCacheResponseGameJson << std::endl;
+        //     return resp->Data(
+        //         (void *)(m_sCacheResponseGameJson.c_str()),
+        //         m_sCacheResponseGameJson.length(),
+        //         true,
+        //         resp->content_type
+        //     );
+        // } else if (sRequestPath == "/api/v1/scoreboard") {
+        //     return this->httpApiV1Scoreboard(req, resp);
+        // } else if (sRequestPath == "/api/v1/teams") {
+        //     resp->SetContentTypeByFilename("teams.json");
+        //     return resp->Data(
+        //         (void *)(m_sCacheResponseTeamsJson.c_str()),
+        //         m_sCacheResponseTeamsJson.length(),
+        //         true,
+        //         resp->content_type
+        //     );
+        // }
+        // return this->httpApiV1GetPaths(req, resp);
     }
 
     if (sRequestPath == "/") {
@@ -152,55 +133,37 @@ int WebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     return 404; // Not found
 }
 
-// int WebServer::admin(const std::string &sWorkerId, WsjcppLightWebHttpRequest *pRequest){
-//     std::string _tag = TAG + "-" + sWorkerId;
-//     std::string sRequestPath = pRequest->getRequestPath();
-//     sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
-
-//     WsjcppLightWebHttpResponse response(pRequest->getSockFd());
-
-//     // Log::warn(_tag, pRequest->requestPath());
-
-//     if (sRequestPath == "/") {
-//         sRequestPath = "/index.html";
-//     }
-
-//     std::string sFilePath = m_sWebFolder + sRequestPath;
-
-
-
-//     // Log::warn(_tag, "Response File " + sFilePath);
-//     response.cacheSec(60).ok().sendFile(sFilePath);
-//     return true;
+// int WebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
+//     // m_pTeamLogos->updateLastWriteTime();
+//     // nlohmann::json jsonScoreboard = m_pConfig->scoreboard()->toJson();
+//     // m_pTeamLogos->updateScorebordJson(jsonScoreboard);
+//     // std::string sScoreboardJson = jsonScoreboard.dump();
+//     // resp->SetContentTypeByFilename("scoreboard.json");
+//     // return resp->Data(
+//     //     (void *)(sScoreboardJson.c_str()),
+//     //     sScoreboardJson.length(),
+//     //     false, // nocopy - force copy
+//     //     resp->content_type
+//     // );
+//     return 0;
 // }
 
+int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
+    std::string sRequestPath = normalizeRequestPath(req);
 
-int WebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
-    auto now = std::chrono::system_clock::now().time_since_epoch();
-    int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-
-    // if (nCurrentTimeSec < m_pConfig->gameStartUTCInSec()) {
-    //     const std::string sErrorMsg = "Error(-8): Game not started yet";
-    //     WsjcppLog::err(TAG, sErrorMsg);
-    //     return resp->String(sErrorMsg, 400);
-    // }
-
-    std::string sResponse = "Accepted: Recieved flag {} from {} (Accepted)";
-    WsjcppLog::ok(TAG, sResponse);
-    return resp->Data((void *)(sResponse.c_str()), sResponse.size(), false, TEXT_PLAIN);
+    return 0;
 }
 
-int WebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
-    // m_pTeamLogos->updateLastWriteTime();
-    // nlohmann::json jsonScoreboard = m_pConfig->scoreboard()->toJson();
-    // m_pTeamLogos->updateScorebordJson(jsonScoreboard);
-    // std::string sScoreboardJson = jsonScoreboard.dump();
-    // resp->SetContentTypeByFilename("scoreboard.json");
-    // return resp->Data(
-    //     (void *)(sScoreboardJson.c_str()),
-    //     sScoreboardJson.length(),
-    //     false, // nocopy - force copy
-    //     resp->content_type
-    // );
-    return 0;
+std::string WebServer::normalizeRequestPath(HttpRequest* req) {
+    std::string sOriginalRequestPath = req->path;
+    std::string sRequestPath;
+    // remove get params from path
+    std::size_t nFoundGetParams = sOriginalRequestPath.rfind("?");
+    if (nFoundGetParams != std::string::npos) {
+        sRequestPath = sOriginalRequestPath.substr(0, nFoundGetParams);
+    } else {
+        sRequestPath = sOriginalRequestPath;
+    }
+    sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
+    return sRequestPath;
 }
