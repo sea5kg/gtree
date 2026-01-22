@@ -26,10 +26,9 @@
 #pragma once
 
 #include <wsjcpp_employees.h>
-
-#include "db_uuids.h"
-
 #include <mutex>
+#include <memory>
+#include "db_uuids.h"
 
 class EmployDatabase : public WsjcppEmployBase {
 public:
@@ -38,14 +37,12 @@ public:
   virtual bool init(const std::string &sName, bool bSilent);
   virtual bool deinit(const std::string &sName, bool bSilent);
 
-  // TODO change to shared ptr
-  DbUuids *dbUuids();
+  std::shared_ptr<DbUuids> dbUuids();
 
 private:
   std::string TAG;
 
   bool initDbUuids();
-  // sqlite3 database files
-  // todo shared ptr
-  DbUuids *m_pUuids;
+
+  std::shared_ptr<DbUuids> m_pUuids;
 };

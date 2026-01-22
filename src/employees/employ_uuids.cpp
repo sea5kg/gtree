@@ -43,7 +43,7 @@ bool EmployUuids::init(const std::string &sName, bool bSilent) {
   addAllowedTypesOfUuid("test");
 
   auto *pDb = findWsjcppEmploy<EmployDatabase>();
-  DbUuids *pUuids = pDb->dbUuids();
+  std::shared_ptr<DbUuids> pUuids = pDb->dbUuids();
   m_mapGlobalUuids = pUuids->getAllRecords();
   return true;
 }

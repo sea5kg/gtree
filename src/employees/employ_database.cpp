@@ -48,20 +48,17 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
   if (!this->initDbUuids()) {
     return false;
   }
-
-  // TODO
   return true;
 }
 
 bool EmployDatabase::deinit(const std::string &sName, bool bSilent) {
-  // TODO
   return true;
 }
 
-DbUuids *EmployDatabase::dbUuids() { return m_pUuids; }
+std::shared_ptr<DbUuids> EmployDatabase::dbUuids() { return m_pUuids; }
 
 bool EmployDatabase::initDbUuids() {
-  m_pUuids = new DbUuids();
+  m_pUuids = std::make_shared<DbUuids>();
   if (!m_pUuids->open()) {
     return false;
   }
