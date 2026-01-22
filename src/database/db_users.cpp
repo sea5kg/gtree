@@ -1,0 +1,81 @@
+/* MIT License
+
+* Copyright (c) 2019-2025 Evgenii Sopov
+
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+#include "db_users.h"
+
+#include <wsjcpp_core.h>
+
+// ---------------------------------------------------------------------
+// DbUsersUpdates
+
+class DbUsersUpdate_000_001 : public DatabaseFileUpdate {
+public:
+  DbUsersUpdate_000_001() : DatabaseFileUpdate("", "v001", "Init table uuids") {}
+  virtual bool applyUpdate(DatabaseFile *pDatabaseFile) override {
+    // IF NOT EXISTS
+    return pDatabaseFile->executeQuery("CREATE TABLE users ( "
+                                       "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                       "  uuid VARCHAR(36) NOT NULL,"
+                                       "  name VARCHAR(128) NOT NULL,"
+                                       "  pass VARCHAR(40) NOT NULL,"
+                                       "  solt VARCHAR(40) NOT NULL,"
+                                       "  role VARCHAR(36) NOT NULL,"
+                                       "  dt INTEGER NOT NULL"
+                                       ");");
+  }
+};
+
+class DbUsersUpdate_001_002 : public DatabaseFileUpdate {
+public:
+  DbUsersUpdate_001_002() : DatabaseFileUpdate("v001", "v002", "Create uniq index") {}
+  virtual bool applyUpdate(DatabaseFile *pDatabaseFile) override {
+    return pDatabaseFile->executeQuery("CREATE UNIQUE INDEX IF NOT EXISTS users_col_uuid ON users (uuid)");
+  }
+};
+
+class DbUsersUpdate_002_003 : public DatabaseFileUpdate {
+public:
+  DbUsersUpdate_002_003() : DatabaseFileUpdate("v002", "v003", "Add default user") {}
+  virtual bool applyUpdate(DatabaseFile *pDatabaseFile) override {
+    std::string uuid = "6d7d9de3-11ba-4c9f-beba-b34ead0e074b";
+    std::string name = "admin";
+    std::string pass = "admin";
+    std::string role = "admin";
+    std::string solt = "zAYgnGzoh2";
+    std::string pass_sha1 = "8bc1dbce82b9a3072d20b50e44a28e5154d4a921"; // sha1(pass + solt)
+    long dt = WsjcppCore::getCurrentTimeInMilliseconds();
+    return pDatabaseFile->executeQuery("INSERT INTO users(uuid, name, pass, solt, role, dt) VALUES('" + uuid + "', '" + name + "', '" + pass_sha1 + "', '" + solt + "', '" + role + "', " + std::to_string(dt) + ")");
+  }
+};
+
+// ---------------------------------------------------------------------
+// DbUsers
+
+DbUsers::DbUsers() : DatabaseFile("users.db") {
+  TAG = "DbUsers";
+  m_vDbUpdates.push_back(std::make_shared<DbUsersUpdate_000_001>());
+  m_vDbUpdates.push_back(std::make_shared<DbUsersUpdate_001_002>());
+  m_vDbUpdates.push_back(std::make_shared<DbUsersUpdate_002_003>());
+};
+
+DbUsers::~DbUsers() {}

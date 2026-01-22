@@ -21,6 +21,7 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/database")
 # database
 list (APPEND WSJCPP_SOURCES "./src/database/database_file.cpp")
 list (APPEND WSJCPP_SOURCES "./src/database/db_uuids.cpp")
+list (APPEND WSJCPP_SOURCES "./src/database/db_users.cpp")
 
 # employees
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_config.cpp")

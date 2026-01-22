@@ -21,31 +21,18 @@
 * SOFTWARE.
 */
 
-// https://github.com/sea5kg/gtree
-
 #pragma once
 
-#include <wsjcpp_employees.h>
-#include <mutex>
-#include "db_uuids.h"
-#include "db_users.h"
+#include "database_file.h"
 
-class EmployDatabase : public WsjcppEmployBase {
+#include <map>
+
+class DbUsers : public DatabaseFile {
 public:
-  EmployDatabase();
-  static std::string name() { return "EmployDatabase"; }
-  virtual bool init(const std::string &sName, bool bSilent);
-  virtual bool deinit(const std::string &sName, bool bSilent);
-
-  std::shared_ptr<DbUuids> dbUuids();
-  std::shared_ptr<DbUsers> dbUsers();
+  DbUsers();
+  ~DbUsers();
 
 private:
+  std::mutex m_mutex;
   std::string TAG;
-
-  bool initDbUuids();
-  bool initDbUsers();
-
-  std::shared_ptr<DbUuids> m_pUuids;
-  std::shared_ptr<DbUsers> m_pUsers;
 };
