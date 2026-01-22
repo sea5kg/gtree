@@ -29,6 +29,7 @@
 #include "WebSocketServer.h"  // libhv
 
 int main(int argc, const char* argv[]) {
+    WsjcppCore::initRandom();
     WsjcppLog::setEnableLogFile(false);
 
     WsjcppEmployeesInit empls({}, false);

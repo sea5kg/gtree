@@ -89,6 +89,10 @@ UserSession EmployUsers::doLogin(const std::string &email, const std::string &pa
   return session;
 }
 
+bool EmployUsers::doLogout(const std::string &uuid) {
+  return false;
+}
+
 UserSession EmployUsers::findSession(const std::string &uuid) {
   UserSession session;
 

@@ -48,6 +48,7 @@ public:
   virtual bool deinit(const std::string &sName, bool bSilent) override;
 
   UserSession doLogin(const std::string &name, const std::string &pass);
+  bool doLogout(const std::string &uuid);
   UserSession findSession(const std::string &uuid);
 
 private:

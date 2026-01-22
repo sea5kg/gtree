@@ -29,6 +29,7 @@
 #include <json.hpp>
 #include "HttpService.h"
 #include <employ_config.h>
+#include <employ_users.h>
 
 class WebServer {
 public:
@@ -39,12 +40,22 @@ public:
 
 private:
   std::string normalizeRequestPath(HttpRequest* req);
+  std::string jsonrpc20ErrorResponse(int code, const std::string &msg, const std::string &msg_id = "");
+  int respError(HttpResponse* resp, int ret_code, const std::string &text);
+  int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
   std::string TAG;
 
   hv::HttpService *m_pHttpService;
   EmployConfig *m_pConfig;
+  EmployUsers *m_pUsers;
 
   std::string m_sHtmlFolder;
 
-  std::string m_sApiPathPrefix;
+  std::string m_respErrInvalidIncomingJson;
+  std::string m_respErrApiOnlyPost;
+  std::string m_respErrExpectedJsonObjectInput;
+  std::string m_respErrMissingJsonRPCField;
+  std::string m_respErrMissingMethodField;
+  std::string m_respErrUnknownMethod;
+  std::string m_respErrWrongParamsField;
 };
