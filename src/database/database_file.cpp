@@ -238,7 +238,7 @@ std::string DatabaseSqlQuery::getSql() {
     // TODO refactor this to vector and join
     sSqlQuery = m_sSqlQuery0;
     if (size0 > 2 && m_sSqlQuery0[size0 - 1] == ' ' && m_sSqlQuery0[size0 - 2] == ',') {
-      sSqlQuery += m_sSqlQuery0.substr(0, size0 - 2);
+      sSqlQuery = m_sSqlQuery0.substr(0, size0 - 2);
     }
     sSqlQuery += m_sSqlQuery1;
     if (size2 > 2 && m_sSqlQuery2[size2 - 1] == ' ' && m_sSqlQuery2[size2 - 2] == ',') {

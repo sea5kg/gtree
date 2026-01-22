@@ -24,6 +24,7 @@
 #include "db_users.h"
 
 #include <wsjcpp_core.h>
+#include <wsjcpp_hashes.h>
 
 // ---------------------------------------------------------------------
 // DbUsersUpdates
@@ -79,3 +80,43 @@ DbUsers::DbUsers() : DatabaseFile("users.db") {
 };
 
 DbUsers::~DbUsers() {}
+
+
+std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::string &name, const std::string &pass) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
+  std::string solt = "";
+  {
+    DatabaseSqlQuerySelect sql("users");
+    sql.sel("solt");
+    sql.where("name", name);
+    DatabaseSelectRows cur;
+    if (!this->selectRows(sql.getSql(), cur)) {
+      return std::pair<std::string, std::string>("", "");
+    }
+    cur.next();
+    solt = cur.getString(0);
+  }
+  std::string sha1_pass = WsjcppHashes::getSha1ByString(pass + solt);
+
+  std::string uuid = "";
+  std::string role = "";
+  {
+    DatabaseSqlQuerySelect sql("users");
+    sql.sel("uuid");
+    sql.sel("role");
+    sql.where("name", name);
+    sql.where("pass", sha1_pass);
+
+    DatabaseSelectRows cur;
+    if (!this->selectRows(sql.getSql(), cur)) {
+      return std::pair<std::string, std::string>("", "");
+    }
+    cur.next();
+    uuid = cur.getString(0);
+    role = cur.getString(1);
+  }
+
+  return std::pair<std::string, std::string>(uuid, role);
+}
+

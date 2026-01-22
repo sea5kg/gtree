@@ -21,20 +21,34 @@
 * SOFTWARE.
 */
 
-#pragma once
+// https://github.com/sea5kg/gtree
 
-#include "database_file.h"
+#include "employ_users.h"
 
-#include <map>
+#include <algorithm>
+#include "employ_database.h"
+#include "employ_uuids.h"
 
-class DbUsers : public DatabaseFile {
-public:
-  DbUsers();
-  ~DbUsers();
+REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployUsers)
 
-  std::pair<std::string, std::string> findUserByNameAndPass(const std::string &name, const std::string &pass);
+EmployUsers::EmployUsers()
+  : WsjcppEmployBase({EmployUsers::name()}, {EmployDatabase::name(), EmployUuids::name()}) {
+  TAG = EmployUsers::name();
+}
 
-private:
-  std::mutex m_mutex;
-  std::string TAG;
-};
+bool EmployUsers::init(const std::string &sName, bool bSilent) {
+  auto *pDb = findWsjcppEmploy<EmployDatabase>();
+  auto pDbUsers = pDb->dbUsers();
+  std::pair<std::string, std::string> res = pDbUsers->findUserByNameAndPass("admin", "admin");
+  if (res.first != "") {
+    WsjcppLog::warn(TAG, "Found default user 'admin' with default password 'admin' please change password or remove this user.");
+  }
+  return true;
+}
+
+bool EmployUsers::deinit(const std::string &sName, bool bSilent) {
+  return true;
+}
+
+
+

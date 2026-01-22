@@ -21,20 +21,23 @@
 * SOFTWARE.
 */
 
+// https://github.com/sea5kg/gtree
+
 #pragma once
 
-#include "database_file.h"
+#include <wsjcpp_employees.h>
 
-#include <map>
-
-class DbUsers : public DatabaseFile {
+class EmployUsers : public WsjcppEmployBase {
 public:
-  DbUsers();
-  ~DbUsers();
+  EmployUsers();
+  static std::string name() { return "EmployUsers"; }
+  virtual bool init(const std::string &sName, bool bSilent);
+  virtual bool deinit(const std::string &sName, bool bSilent) override;
 
-  std::pair<std::string, std::string> findUserByNameAndPass(const std::string &name, const std::string &pass);
+  bool findUser(const std::string &sName, const std::string &sPass);
 
 private:
   std::mutex m_mutex;
+  // std::map<std::string, std::string> m_mapGlobalUuids;
   std::string TAG;
 };
