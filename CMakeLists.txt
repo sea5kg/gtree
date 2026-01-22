@@ -16,9 +16,15 @@ set(EXECUTABLE_OUTPUT_PATH ${gtree_SOURCE_DIR})
 # include header dirs
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/employees")
+list (APPEND WSJCPP_INCLUDE_DIRS "src/database")
+
+# database
+list (APPEND WSJCPP_SOURCES "./src/database/database_file.cpp")
+list (APPEND WSJCPP_SOURCES "./src/database/db_uuids.cpp")
 
 # employees
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_config.cpp")
+# list (APPEND WSJCPP_SOURCES "./src/employees/employ_da.cpp")
 
 # http_server
 list (APPEND WSJCPP_SOURCES "src/web_server.cpp")
