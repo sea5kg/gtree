@@ -50,7 +50,16 @@ public:
   }
 };
 
-// TODO collect and update all uuids from another tables
+class DbUuidsUpdate_002_003 : public DatabaseFileUpdate {
+public:
+  DbUuidsUpdate_002_003() : DatabaseFileUpdate("v002", "v003", "Add default user") {}
+  virtual bool applyUpdate(DatabaseFile *pDatabaseFile) override {
+    std::string uuid = "6d7d9de3-11ba-4c9f-beba-b34ead0e074b";
+    std::string typeobj = "user";
+    long dt = WsjcppCore::getCurrentTimeInMilliseconds();
+    return pDatabaseFile->executeQuery("INSERT INTO uuids(uuid, typeobj, dt) VALUES('" + uuid + "', '" + typeobj + "', " + std::to_string(dt) + ")");
+  }
+};
 
 // ---------------------------------------------------------------------
 // DbUuids
@@ -59,6 +68,7 @@ DbUuids::DbUuids() : DatabaseFile("uuids.db") {
   TAG = "DbUuids";
   m_vDbUpdates.push_back(std::make_shared<DbUuidsUpdate_000_001>());
   m_vDbUpdates.push_back(std::make_shared<DbUuidsUpdate_001_002>());
+  m_vDbUpdates.push_back(std::make_shared<DbUuidsUpdate_002_003>());
 };
 
 DbUuids::~DbUuids() {}
