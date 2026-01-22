@@ -24,6 +24,7 @@ list (APPEND WSJCPP_SOURCES "./src/database/db_uuids.cpp")
 
 # employees
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_config.cpp")
+list (APPEND WSJCPP_SOURCES "./src/employees/employ_database.cpp")
 # list (APPEND WSJCPP_SOURCES "./src/employees/employ_da.cpp")
 
 # http_server
