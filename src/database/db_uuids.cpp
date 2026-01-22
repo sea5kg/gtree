@@ -57,8 +57,8 @@ public:
 
 DbUuids::DbUuids() : DatabaseFile("uuids.db") {
   TAG = "DbUuids";
-  m_vDbUpdates.push_back(new DbUuidsUpdate_000_001());
-  m_vDbUpdates.push_back(new DbUuidsUpdate_001_002());
+  m_vDbUpdates.push_back(std::make_shared<DbUuidsUpdate_000_001>());
+  m_vDbUpdates.push_back(std::make_shared<DbUuidsUpdate_001_002>());
 };
 
 DbUuids::~DbUuids() {}

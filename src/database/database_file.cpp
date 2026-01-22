@@ -500,18 +500,18 @@ bool DatabaseFile::installUpdates() {
     bInstalledNewUpdates = false;
     std::vector<std::string> installedNewUpdates;
 
-    for (int i = 0; i < m_vDbUpdates.size(); i++) {
-      DatabaseFileUpdate *pUpdate = m_vDbUpdates[i];
-      const std::string &sVersionFrom = m_vDbUpdates[i]->info().versionFrom();
-      const std::string &sVersionTo = m_vDbUpdates[i]->info().versionTo();
+    for (const auto& upd : m_vDbUpdates) {
+      // DatabaseFileUpdate *pUpdate = m_vDbUpdates[i];
+      const std::string &sVersionFrom = upd->info().versionFrom();
+      const std::string &sVersionTo = upd->info().versionTo();
 
       for (int iv = 0; iv < installedVersionsTo.size(); iv++) {
         if (sVersionFrom == installedVersionsTo[iv]) {
           if (std::find(installedVersionsTo.begin(), installedVersionsTo.end(), sVersionTo) == installedVersionsTo.end()) {
-            if (!pUpdate->applyUpdate(this)) {
+            if (!upd->applyUpdate(this)) {
               return false;
             }
-            if (!insertDbVersion(pUpdate->info())) {
+            if (!insertDbVersion(upd->info())) {
               return false;
             }
             WsjcppLog::ok(TAG, "Installed update " + sVersionTo);

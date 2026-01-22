@@ -27,6 +27,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <memory>
 
 class DatabaseFileUpdateInfo {
 public:
@@ -137,7 +138,7 @@ public:
 protected:
   bool installUpdates();
   bool insertDbVersion(const DatabaseFileUpdateInfo &info);
-  std::vector<DatabaseFileUpdate *> m_vDbUpdates;
+  std::vector<std::shared_ptr<DatabaseFileUpdate>> m_vDbUpdates;
   std::string TAG;
 
 private:

@@ -27,7 +27,6 @@
 
 #include <wsjcpp_employees.h>
 #include <mutex>
-#include <memory>
 #include "db_uuids.h"
 
 class EmployDatabase : public WsjcppEmployBase {
