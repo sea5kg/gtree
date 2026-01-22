@@ -30,4 +30,10 @@ dependencies:
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_yaml"
     installation-datetime: "Sat, 11 Jan 2025 08:54:01 GMT"
+  - name: "wsjcpp-hashes"
+    version: "v0.1.4"
+    url: "https://github.com/wsjcpp/wsjcpp-hashes:master"
+    origin: "https://github.com/"
+    installation-dir: "./src.wsjcpp/wsjcpp_hashes"
+    installation-datetime: "Thu, 22 Jan 2026 15:12:15 GMT"
 
