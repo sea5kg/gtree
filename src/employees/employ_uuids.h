@@ -40,6 +40,7 @@ public:
   std::string generateNewUuid(const std::string &sTypeOfObject);
   bool hasUuid(const std::string &sUuid);
   std::string getTypeOfObject(const std::string &sUuid);
+  bool removeUuid(const std::string &sUuid);
 
 private:
   std::mutex m_mutex;

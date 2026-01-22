@@ -34,6 +34,7 @@ public:
 
   std::map<std::string, std::string> getAllRecords();
   bool insertUuid(const std::string &sUuid, const std::string &sTypeOfObject);
+  bool deleteUuid(const std::string &sUuid);
 
 private:
   std::mutex m_mutex;

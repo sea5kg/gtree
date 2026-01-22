@@ -87,3 +87,15 @@ std::string EmployUuids::getTypeOfObject(const std::string &sUuid) {
   }
   return "unknown";
 }
+
+bool EmployUuids::removeUuid(const std::string &sUuid) {
+  if (m_mapGlobalUuids.count(sUuid)) {
+    m_mapGlobalUuids.erase(sUuid);
+    auto *pDb = findWsjcppEmploy<EmployDatabase>();
+    if (!pDb->dbUuids()->deleteUuid(sUuid)) {
+      return false;
+      // WsjcppLog::throw_err(TAG, "Problem with delete uuid");
+    }
+  }
+  return true;
+}

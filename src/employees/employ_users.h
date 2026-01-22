@@ -27,6 +27,19 @@
 
 #include <wsjcpp_employees.h>
 
+struct UserInfo  {
+  std::string uuid;
+  std::string email;
+  std::string role;
+};
+
+struct UserSession  {
+  std::string uuid;
+  int expired_at;
+  UserInfo user;
+};
+
+
 class EmployUsers : public WsjcppEmployBase {
 public:
   EmployUsers();
@@ -34,10 +47,13 @@ public:
   virtual bool init(const std::string &sName, bool bSilent);
   virtual bool deinit(const std::string &sName, bool bSilent) override;
 
-  bool findUser(const std::string &sName, const std::string &sPass);
+  UserSession doLogin(const std::string &name, const std::string &pass);
+  UserSession findSession(const std::string &uuid);
 
 private:
   std::mutex m_mutex;
-  // std::map<std::string, std::string> m_mapGlobalUuids;
+  std::map<std::string, UserInfo> m_mapUserInfo;
+  std::map<std::string, std::string> m_mapSessionUserUuidCache;
+  std::map<std::string, int> m_mapSessionExpiredAt;
   std::string TAG;
 };

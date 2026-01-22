@@ -101,3 +101,16 @@ bool DbUuids::insertUuid(const std::string &sUuid, const std::string &sTypeOfObj
   }
   return true;
 }
+
+bool DbUuids::deleteUuid(const std::string &sUuid) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  // TODO
+  // DatabaseSqlQueryDelete sql("uuids");
+  // sql.add("uuid", sUuid);
+
+  // if (!this->executeQuery(sql.getSql())) {
+  //   WsjcppLog::err(TAG, "Could not insert " + sql.getSql());
+  //   return false;
+  // }
+  return true;
+}
