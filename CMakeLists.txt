@@ -63,7 +63,8 @@ add_subdirectory(src/3rdparty/sqlite3)
 #     SQLITE_THREADSAFE=0
 # )
 list (APPEND WSJCPP_LIBRARIES sqlite3-static)
-list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/src/3rdparty/sqlite3/src")
+message(STATUS "sqlite3 includes dir: ${PROJECT_SOURCE_DIR}/src/3rdparty/sqlite3/src")
+list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/3rdparty/sqlite3/src")
 
 include_directories(${WSJCPP_INCLUDE_DIRS})
 

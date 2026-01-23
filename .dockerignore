@@ -2,3 +2,5 @@
 /docker_tmp
 /.wsjcpp
 /backups
+/.vscode
+/data
