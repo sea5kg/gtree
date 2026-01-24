@@ -69,10 +69,12 @@ UserSession EmployUsers::doLogin(const std::string &email, const std::string &pa
   if (m_mapUserInfo.count(uuid)) {
     m_mapUserInfo[uuid].email = email;
     m_mapUserInfo[uuid].role = role;
+    m_mapUserInfo[uuid].uuid = uuid;
     user = m_mapUserInfo[uuid];
   } else {
     user.email = email;
     user.role = role;
+    user.uuid = uuid;
     m_mapUserInfo[uuid] = user;
   }
 
@@ -82,40 +84,64 @@ UserSession EmployUsers::doLogin(const std::string &email, const std::string &pa
   session.uuid = pUuids->generateNewUuid("session");
   session.expired_at = WsjcppCore::getCurrentTimeInSeconds() + 86400; // on 24h
 
-  m_mapSessionUserUuidCache[session.uuid] = session.user.uuid;
+  // WsjcppLog::info(TAG, "m_mapSessionUserUuidCache[" + session.uuid + "] = " + session.user.uuid);
 
+  m_mapSessionUserUuidCache[session.uuid] = session.user.uuid;
+  m_mapSessionExpiredAt[session.uuid] = session.expired_at;
   // TODO write session to database
 
   return session;
 }
 
 bool EmployUsers::doLogout(const std::string &uuid) {
-  return false;
+  if (uuid == "") {
+    return false;
+  }
+  // UserSession session = findSession(uuid);
+
+  if (m_mapSessionUserUuidCache.count(uuid) > 0) {
+    m_mapSessionUserUuidCache.erase(uuid);
+  }
+
+  if (m_mapSessionExpiredAt.count(uuid) > 0) {
+    m_mapSessionExpiredAt.erase(uuid);
+  }
+
+  return true;
 }
 
 UserSession EmployUsers::findSession(const std::string &uuid) {
   UserSession session;
-
-  if (!m_mapSessionUserUuidCache.count(session.uuid)) {
+  if (uuid == "") {
     return session;
   }
 
-  if (m_mapSessionExpiredAt.count(session.uuid)) {
-    int expired_at = m_mapSessionExpiredAt[session.uuid];
-    if (expired_at > WsjcppCore::getCurrentTimeInSeconds()) {
-      m_mapSessionExpiredAt.erase(session.uuid);
-      m_mapSessionUserUuidCache.erase(session.uuid);
-      return session;
-    }
+  if (m_mapSessionUserUuidCache.count(uuid) == 0) {
+    return session;
   }
-  std::string user_uuid = m_mapSessionUserUuidCache[session.uuid];
+
+  if (m_mapSessionExpiredAt.count(uuid) == 0) {
+    m_mapSessionUserUuidCache.erase(uuid);
+    return session;
+  }
+
+  int expired_at = m_mapSessionExpiredAt[uuid];
+  if (expired_at < WsjcppCore::getCurrentTimeInSeconds()) {
+    m_mapSessionExpiredAt.erase(uuid);
+    m_mapSessionUserUuidCache.erase(uuid);
+    return session;
+  }
+
+  std::string user_uuid = m_mapSessionUserUuidCache[uuid];
 
   UserInfo user;
-  if (!m_mapUserInfo.count(session.uuid)) {
+  if (m_mapUserInfo.count(user_uuid) == 0) {
     return session;
   }
+
   session.uuid = uuid;
-  session.expired_at = m_mapSessionExpiredAt[session.uuid];
-  session.user = m_mapUserInfo[session.uuid];
+  session.expired_at = m_mapSessionExpiredAt[uuid];
+  session.user = m_mapUserInfo[user_uuid];
+
   return session;
 }

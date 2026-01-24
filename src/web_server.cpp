@@ -70,6 +70,8 @@ WebServer::WebServer() {
   m_respErrMissingMethodField = jsonrpc20ErrorResponse(1005, "Missing field 'method'");
   m_respErrUnknownMethod = jsonrpc20ErrorResponse(1006, "Unknown method");
   m_respErrWrongParamsField = jsonrpc20ErrorResponse(1007, "Missing or unexpected type for field 'params'");
+  m_respErrAlreadyAuthorized = jsonrpc20ErrorResponse(1008, "You already authorized");
+  m_respErrNotAuthorized = jsonrpc20ErrorResponse(1009, "You not authorized");
 }
 
 hv::HttpService *WebServer::getService() {
@@ -112,6 +114,9 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   auto now = std::chrono::system_clock::now().time_since_epoch();
   int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
 
+  std::string auth = req->GetHeader("Authorization");
+  // WsjcppLog::info(TAG, "auth = " + auth);
+
   if (req->method != HTTP_POST) {
     return respError(resp, 403, m_respErrApiOnlyPost);
   }
@@ -138,13 +143,15 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   }
 
   std::string method = req_json_body["method"];
-  std::string id = "";
+  std::string msg_id = "";
   if (req_json_body["id"].is_string()) {
-    id = req_json_body["id"];
+    msg_id = req_json_body["id"];
   }
 
   if (method == "doLogin") {
-    return doLogin(req_json_body, id, resp);
+    return doLogin(req_json_body, msg_id, auth, resp);
+  } else if (method == "doLogout") {
+    return doLogout(req_json_body, msg_id, auth, resp);
   }
 
   return respError(resp, 404, m_respErrUnknownMethod);
@@ -218,7 +225,13 @@ int WebServer::respResult(HttpResponse* resp, const nlohmann::json &result, cons
   );
 }
 
-int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, HttpResponse* resp) {
+int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+  // auth
+  UserSession req_session = m_pUsers->findSession(auth);
+  if (req_session.uuid != "") {
+    return respError(resp, 401, m_respErrAlreadyAuthorized);
+  }
+
   if (!req["params"].is_object()) {
     // std::cerr << "Not found field method " << std::endl;
     return respError(resp, 400, m_respErrWrongParamsField);
@@ -240,5 +253,21 @@ int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, Htt
   nlohmann::json result;
   result["session"] = session.uuid;
   result["expired_at"] = session.expired_at;
+  return respResult(resp, result, msg_id);
+}
+
+int WebServer::doLogout(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+  UserSession req_session = m_pUsers->findSession(auth);
+
+  if (req_session.uuid == "") {
+    return respError(resp, 401, m_respErrNotAuthorized);
+  }
+
+  if (!m_pUsers->doLogout(req_session.uuid)) {
+    return respError(resp, 401, 10006, "Could not doLogout", msg_id);
+  }
+
+  nlohmann::json result;
+  result["removed_session"] = req_session.uuid;
   return respResult(resp, result, msg_id);
 }

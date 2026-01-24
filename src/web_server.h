@@ -44,7 +44,8 @@ private:
   int respError(HttpResponse* resp, int ret_code, const std::string &text);
   int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
   int respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id);
-  int doLogin(const nlohmann::json &req, const std::string &id, HttpResponse* resp);
+  int doLogin(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
+  int doLogout(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
 
   std::string TAG;
   hv::HttpService *m_pHttpService;
@@ -60,4 +61,6 @@ private:
   std::string m_respErrMissingMethodField;
   std::string m_respErrUnknownMethod;
   std::string m_respErrWrongParamsField;
+  std::string m_respErrAlreadyAuthorized;
+  std::string m_respErrNotAuthorized;
 };
