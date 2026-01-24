@@ -144,39 +144,7 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   }
 
   if (method == "doLogin") {
-    if (!req_json_body["params"].is_object()) {
-      // std::cerr << "Not found field method " << std::endl;
-      return respError(resp, 400, m_respErrWrongParamsField);
-    }
-
-    if (!req_json_body["params"]["name"].is_string()) {
-      return respError(resp, 400, 10002, "Missing field 'name' or wrong type", id);
-    }
-    if (!req_json_body["params"]["pass"].is_string()) {
-      return respError(resp, 400, 10002, "Missing field 'pass' or wrong type", id);
-    }
-    std::string name = req_json_body["params"]["name"];
-    std::string pass = req_json_body["params"]["pass"];
-    UserSession session = m_pUsers->doLogin(name, pass);
-    if (session.uuid == "") {
-      return respError(resp, 401, 10003, "Wrong name or pass field.", id);
-    }
-
-    nlohmann::json resp_json;
-    resp_json["jsonrpc"] = "2.0";
-    resp_json["result"] = nlohmann::json();
-    resp_json["result"]["session"] = session.uuid;
-    resp_json["result"]["expired_at"] = session.expired_at;
-    if (id != "") {
-      resp_json["id"] = id;
-    }
-    std::string text = resp_json.dump();
-    return resp->Data(
-      (void *)(text.c_str()),
-      text.length(),
-      false, // nocopy - force copy
-      APPLICATION_JSON
-    );
+    return doLogin(req_json_body, id, resp);
   }
 
   return respError(resp, 404, m_respErrUnknownMethod);
@@ -232,4 +200,45 @@ int WebServer::respError(HttpResponse* resp, int ret_code, const std::string &te
 int WebServer::respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id) {
   std::string text = jsonrpc20ErrorResponse(code_error, msg, msg_id);
   return respError(resp, ret_code, text);
+}
+
+int WebServer::respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id) {
+  nlohmann::json resp_json;
+  resp_json["jsonrpc"] = "2.0";
+  resp_json["result"] = result;
+  if (msg_id != "") {
+    resp_json["id"] = msg_id;
+  }
+  std::string text = resp_json.dump();
+  return resp->Data(
+    (void *)(text.c_str()),
+    text.length(),
+    false, // nocopy - force copy
+    APPLICATION_JSON
+  );
+}
+
+int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, HttpResponse* resp) {
+  if (!req["params"].is_object()) {
+    // std::cerr << "Not found field method " << std::endl;
+    return respError(resp, 400, m_respErrWrongParamsField);
+  }
+
+  if (!req["params"]["name"].is_string()) {
+    return respError(resp, 400, 10002, "Missing field 'name' or wrong type", msg_id);
+  }
+  if (!req["params"]["pass"].is_string()) {
+    return respError(resp, 400, 10002, "Missing field 'pass' or wrong type", msg_id);
+  }
+  std::string name = req["params"]["name"];
+  std::string pass = req["params"]["pass"];
+  UserSession session = m_pUsers->doLogin(name, pass);
+  if (session.uuid == "") {
+    return respError(resp, 401, 10003, "Wrong name or pass field.", msg_id);
+  }
+
+  nlohmann::json result;
+  result["session"] = session.uuid;
+  result["expired_at"] = session.expired_at;
+  return respResult(resp, result, msg_id);
 }

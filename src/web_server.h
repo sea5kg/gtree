@@ -43,8 +43,10 @@ private:
   std::string jsonrpc20ErrorResponse(int code, const std::string &msg, const std::string &msg_id = "");
   int respError(HttpResponse* resp, int ret_code, const std::string &text);
   int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
-  std::string TAG;
+  int respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id);
+  int doLogin(const nlohmann::json &req, const std::string &id, HttpResponse* resp);
 
+  std::string TAG;
   hv::HttpService *m_pHttpService;
   EmployConfig *m_pConfig;
   EmployUsers *m_pUsers;
