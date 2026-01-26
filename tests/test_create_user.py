@@ -9,28 +9,28 @@ resp = requests.post("http://localhost:10555/api/", json={
     "method": "doLogin",
     "id": str(uuid.uuid4()),
     "params": {
-        "name": "admin",
+        "email": "admin",
         "pass": "admin",
     },
 })
 print(resp.status_code)
-session = ""
+session_admin = ""
 if resp.status_code == 200:
-    session = resp.json()["result"]["session"]
+    session_admin = resp.json()["result"]["session"]
 print(resp.json())
 
-print("session", session)
+print("session: ", session_admin)
 
 print("createUser")
 resp = requests.post("http://localhost:10555/api/", headers={
-    "Authorization": session,
+    "Authorization": session_admin,
 }, json={
     "jsonrpc": "2.0",
     "method": "createUser",
     "id": str(uuid.uuid4()),
     "params": {
-        "name": "user1",
-        "pass": "user2",
+        "email": "some_user",
+        "pass": "qwerty",
         "role": "user",
     },
 })

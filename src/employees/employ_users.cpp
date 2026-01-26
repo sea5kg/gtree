@@ -145,3 +145,48 @@ UserSession EmployUsers::findSession(const std::string &uuid) {
 
   return session;
 }
+
+bool EmployUsers::createUser(const std::string &email, const std::string &pass, const std::string &role, std::string &error) {
+  auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
+
+  std::string uuid = dbUsers->findUserUuid(email);
+  if (uuid != "") {
+    error = "User already exists " + email + " -> " + uuid;
+    return false;
+  }
+
+  // // UserSession session;
+  // // std::pair<std::string, std::string> res = dbUsers->findUserByNameAndPass(email, pass);
+  // // if (res.first == "") {
+  // //   return session;
+  // // }
+  // std::string uuid = res.first;
+  // std::string role = res.second;
+  // UserInfo user;
+  // if (m_mapUserInfo.count(uuid)) {
+  //   m_mapUserInfo[uuid].email = email;
+  //   m_mapUserInfo[uuid].role = role;
+  //   m_mapUserInfo[uuid].uuid = uuid;
+  //   user = m_mapUserInfo[uuid];
+  // } else {
+  //   user.email = email;
+  //   user.role = role;
+  //   user.uuid = uuid;
+  //   m_mapUserInfo[uuid] = user;
+  // }
+
+  // session.user = user;
+
+  // auto *pUuids = findWsjcppEmploy<EmployUuids>();
+  // session.uuid = pUuids->generateNewUuid("session");
+  // session.expired_at = WsjcppCore::getCurrentTimeInSeconds() + 86400; // on 24h
+
+  // // WsjcppLog::info(TAG, "m_mapSessionUserUuidCache[" + session.uuid + "] = " + session.user.uuid);
+
+  // m_mapSessionUserUuidCache[session.uuid] = session.user.uuid;
+  // m_mapSessionExpiredAt[session.uuid] = session.expired_at;
+  // // TODO write session to database
+
+  error = "Not implemented";
+  return false;
+}

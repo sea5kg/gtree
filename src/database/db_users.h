@@ -33,6 +33,7 @@ public:
   ~DbUsers();
 
   std::pair<std::string, std::string> findUserByNameAndPass(const std::string &name, const std::string &pass);
+  std::string findUserUuid(const std::string &name);
 
 private:
   std::mutex m_mutex;

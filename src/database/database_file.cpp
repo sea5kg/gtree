@@ -188,6 +188,9 @@ bool DatabaseSqlQuery::where(const std::string &sColumnName, const std::string &
     return false;
   }
   if (m_nSqlType == DatabaseSqlQueryType::SELECT) {
+    if (m_sSqlQuery2.size() > 0) {
+      m_sSqlQuery2 += " AND ";
+    }
     m_sSqlQuery2 += sColumnName + " = " + prepareStringValue(sValue);
   } else if (m_nSqlType == DatabaseSqlQueryType::INSERT) {
     m_sErrorMessage = "where can be in insert";
@@ -241,8 +244,8 @@ std::string DatabaseSqlQuery::getSql() {
       sSqlQuery = m_sSqlQuery0.substr(0, size0 - 2);
     }
     sSqlQuery += m_sSqlQuery1;
-    if (size2 > 2 && m_sSqlQuery2[size2 - 1] == ' ' && m_sSqlQuery2[size2 - 2] == ',') {
-      sSqlQuery += m_sSqlQuery2.substr(0, size2 - 2);
+    if (m_sSqlQuery2.size() > 0) {
+      sSqlQuery += " WHERE " + m_sSqlQuery2;
     }
   } else if (m_nSqlType == DatabaseSqlQueryType::INSERT) {
     if (size0 > 2 && m_sSqlQuery0[size0 - 1] == ' ' && m_sSqlQuery0[size0 - 2] == ',') {

@@ -81,7 +81,6 @@ DbUsers::DbUsers() : DatabaseFile("users.db") {
 
 DbUsers::~DbUsers() {}
 
-
 std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::string &name, const std::string &pass) {
   std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -94,7 +93,9 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
     if (!this->selectRows(sql.getSql(), cur)) {
       return std::pair<std::string, std::string>("", "");
     }
-    cur.next();
+    if (!cur.next()) {
+      return std::pair<std::string, std::string>("", "");
+    }
     solt = cur.getString(0);
   }
   std::string sha1_pass = WsjcppHashes::getSha1ByString(pass + solt);
@@ -120,3 +121,19 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
   return std::pair<std::string, std::string>(uuid, role);
 }
 
+std::string DbUsers::findUserUuid(const std::string &name) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
+  DatabaseSqlQuerySelect sql("users");
+  sql.sel("uuid");
+  sql.where("name", name);
+
+  DatabaseSelectRows cur;
+  if (!this->selectRows(sql.getSql(), cur)) {
+    return "";
+  }
+  if (cur.next()) {
+    return cur.getString(0);
+  }
+  return "";
+}

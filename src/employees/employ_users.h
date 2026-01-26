@@ -50,6 +50,7 @@ public:
   UserSession doLogin(const std::string &name, const std::string &pass);
   bool doLogout(const std::string &uuid);
   UserSession findSession(const std::string &uuid);
+  bool createUser(const std::string &email, const std::string &pass, const std::string &role, std::string &error);
 
 private:
   std::mutex m_mutex;
