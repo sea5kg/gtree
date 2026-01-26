@@ -21,13 +21,18 @@ print(resp.json())
 
 print("session", session)
 
-print("doLogout")
+print("createUser")
 resp = requests.post("http://localhost:10555/api/", headers={
     "Authorization": session,
 }, json={
     "jsonrpc": "2.0",
-    "method": "doLogout",
+    "method": "createUser",
     "id": str(uuid.uuid4()),
+    "params": {
+        "name": "user1",
+        "pass": "user2",
+        "role": "user",
+    },
 })
 
 print(resp.status_code)
