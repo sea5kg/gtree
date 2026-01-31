@@ -41,4 +41,9 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_hashes/smal
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.h")
 
+# wsjcpp-sql-builder:v0.2.0
+list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_sql_builder/")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_sql_builder/wsjcpp_sql_builder.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_sql_builder/wsjcpp_sql_builder.cpp")
+
 

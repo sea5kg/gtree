@@ -37,3 +37,10 @@ dependencies:
     installation-dir: "./src.wsjcpp/wsjcpp_hashes"
     installation-datetime: "Thu, 22 Jan 2026 15:12:15 GMT"
 
+  - name: "wsjcpp-sql-builder"
+    version: "v0.2.0"
+    url: "https://github.com/wsjcpp/wsjcpp-sql-builder:master"
+    origin: "https://github.com/"
+    installation-dir: "./src.wsjcpp/wsjcpp_sql_builder"
+    installation-datetime: "Sat, 31 Jan 2026 11:06:19 GMT"
+
