@@ -78,52 +78,6 @@ private:
   void *m_pQuery;
 };
 
-enum class DatabaseSqlQueryType { SELECT, INSERT, UPDATE };
-
-class DatabaseSqlQuery {
-public:
-  DatabaseSqlQuery(DatabaseSqlQueryType nSqlType, const std::string &sSqlTable);
-  bool sel(const std::string &sColumnName);
-  bool add(const std::string &sColumnName, const std::string &sValue);
-  bool add(const std::string &sColumnName, int nValue);
-  bool add(const std::string &sColumnName, long nValue);
-  bool where(const std::string &sColumnName, const std::string &sValue);
-  bool where(const std::string &sColumnName, int nValue);
-  bool where(const std::string &sColumnName, long nValue);
-
-  std::string getSql();
-  bool isValid();
-  std::string getErrorMessage();
-
-private:
-  std::string prepareStringValue(const std::string &sValue);
-  bool checkName(const std::string &sColumnName);
-  DatabaseSqlQueryType m_nSqlType;
-  std::string m_sSqlTable;
-  std::string m_sErrorMessage;
-  bool m_bValid;
-
-  // query parts
-  std::string m_sSqlQuery0;
-  std::string m_sSqlQuery1;
-  std::string m_sSqlQuery2;
-};
-
-class DatabaseSqlQuerySelect : public DatabaseSqlQuery {
-public:
-  DatabaseSqlQuerySelect(const std::string &sSqlTable);
-};
-
-class DatabaseSqlQueryInsert : public DatabaseSqlQuery {
-public:
-  DatabaseSqlQueryInsert(const std::string &sSqlTable);
-};
-
-class DatabaseSqlQueryUpdate : public DatabaseSqlQuery {
-public:
-  DatabaseSqlQueryUpdate(const std::string &sSqlTable);
-};
-
 class DatabaseFile {
 public:
   DatabaseFile(const std::string &sFilename);

@@ -24,6 +24,7 @@
 #include "db_uuids.h"
 
 #include <wsjcpp_core.h>
+#include <wsjcpp_sql_builder.h>
 
 // ---------------------------------------------------------------------
 // DbUuidsUpdates
@@ -90,13 +91,17 @@ std::map<std::string, std::string> DbUuids::getAllRecords() {
 bool DbUuids::insertUuid(const std::string &sUuid, const std::string &sTypeOfObject) {
   std::lock_guard<std::mutex> lock(m_mutex);
 
-  DatabaseSqlQueryInsert sql("uuids");
-  sql.add("uuid", sUuid);
-  sql.add("typeobj", sTypeOfObject);
-  sql.add("dt", WsjcppCore::getCurrentTimeInMilliseconds());
+  wsjcpp::SqlBuilder builder;
+  builder.insertInto("uuids")
+    .addColums({"uuid", "typeobj", "dt"})
+    .val(sUuid)
+    .val(sTypeOfObject)
+    // TODO long
+    .val(int(WsjcppCore::getCurrentTimeInMilliseconds()))
+  ;
 
-  if (!this->executeQuery(sql.getSql())) {
-    WsjcppLog::err(TAG, "Could not insert " + sql.getSql());
+  if (!this->executeQuery(builder.sql())) {
+    WsjcppLog::err(TAG, "Could not insert " + builder.sql());
     return false;
   }
   return true;

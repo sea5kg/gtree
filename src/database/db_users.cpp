@@ -25,6 +25,7 @@
 
 #include <wsjcpp_core.h>
 #include <wsjcpp_hashes.h>
+#include <wsjcpp_sql_builder.h>
 
 // ---------------------------------------------------------------------
 // DbUsersUpdates
@@ -86,11 +87,13 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
 
   std::string solt = "";
   {
-    DatabaseSqlQuerySelect sql("users");
-    sql.sel("solt");
-    sql.where("name", name);
+    wsjcpp::SqlBuilder builder;
+    builder.selectFrom("users")
+      .colum(solt)
+      .where().equal("name", name)
+    ;
     DatabaseSelectRows cur;
-    if (!this->selectRows(sql.getSql(), cur)) {
+    if (!this->selectRows(builder.sql(), cur)) {
       return std::pair<std::string, std::string>("", "");
     }
     if (!cur.next()) {
@@ -103,14 +106,18 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
   std::string uuid = "";
   std::string role = "";
   {
-    DatabaseSqlQuerySelect sql("users");
-    sql.sel("uuid");
-    sql.sel("role");
-    sql.where("name", name);
-    sql.where("pass", sha1_pass);
+    wsjcpp::SqlBuilder builder;
+    builder.selectFrom("users")
+      .colum("uuid")
+      .colum("role")
+      .where()
+        .equal("name", name)
+        .and_()
+        .equal("pass", sha1_pass)
+    ;
 
     DatabaseSelectRows cur;
-    if (!this->selectRows(sql.getSql(), cur)) {
+    if (!this->selectRows(builder.sql(), cur)) {
       return std::pair<std::string, std::string>("", "");
     }
     cur.next();
@@ -124,12 +131,14 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
 std::string DbUsers::findUserUuid(const std::string &name) {
   std::lock_guard<std::mutex> lock(m_mutex);
 
-  DatabaseSqlQuerySelect sql("users");
-  sql.sel("uuid");
-  sql.where("name", name);
+  wsjcpp::SqlBuilder builder;
+  builder.selectFrom("users")
+    .colum("uuid")
+    .where().equal("name", name)
+  ;
 
   DatabaseSelectRows cur;
-  if (!this->selectRows(sql.getSql(), cur)) {
+  if (!this->selectRows(builder.sql(), cur)) {
     return "";
   }
   if (cur.next()) {
