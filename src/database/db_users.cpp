@@ -146,3 +146,44 @@ std::string DbUsers::findUserUuid(const std::string &name) {
   }
   return "";
 }
+
+bool DbUsers::createUser(
+  const std::string &uuid,
+  const std::string &name,
+  const std::string &role,
+  const std::string &pass
+) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
+  std::string solt = createRandomSolt();
+
+  std::string sha1_pass = WsjcppHashes::getSha1ByString(pass + solt);
+
+  wsjcpp::SqlBuilder builder;
+  builder.insertInto("users")
+    .addColums({
+      "uuid",
+      "name",
+      "pass",
+      "solt",
+      "role",
+      "dt"
+    })
+    .val(uuid)
+    .val(name)
+    .val(sha1_pass)
+    .val(solt)
+    .val(role)
+    .val(WsjcppCore::getCurrentTimeInMilliseconds())
+  ;
+  return this->executeQuery(builder.sql());
+}
+
+std::string DbUsers::createRandomSolt() {
+    std::string sRet = "0000000000";
+    const std::string sAlphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (int i = 0; i < 10; i++) {
+        sRet[i] = sAlphabet[rand() % sAlphabet.length()];
+    }
+    return sRet;
+}

@@ -313,6 +313,7 @@ int WebServer::createUser(const nlohmann::json &req, const std::string &msg_id, 
   }
 
   nlohmann::json result;
-  // result["removed_session"] = req_session.uuid;
+  result["email"] = email;
+  result["role"] = role;
   return respResult(resp, result, msg_id);
 }

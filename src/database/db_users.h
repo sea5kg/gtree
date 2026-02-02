@@ -34,8 +34,11 @@ public:
 
   std::pair<std::string, std::string> findUserByNameAndPass(const std::string &name, const std::string &pass);
   std::string findUserUuid(const std::string &name);
+  bool createUser(const std::string &uuid, const std::string &name, const std::string &role, const std::string &pass);
 
 private:
+  std::string createRandomSolt();
+
   std::mutex m_mutex;
   std::string TAG;
 };
