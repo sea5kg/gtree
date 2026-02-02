@@ -96,8 +96,7 @@ bool DbUuids::insertUuid(const std::string &sUuid, const std::string &sTypeOfObj
     .addColums({"uuid", "typeobj", "dt"})
     .val(sUuid)
     .val(sTypeOfObject)
-    // TODO long
-    .val(int(WsjcppCore::getCurrentTimeInMilliseconds()))
+    .val(WsjcppCore::getCurrentTimeInMilliseconds())
   ;
 
   if (!this->executeQuery(builder.sql())) {

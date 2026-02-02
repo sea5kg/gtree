@@ -28,9 +28,9 @@ distribution:
   - source-file: "src/wsjcpp_sql_builder.h"
     target-file: "wsjcpp_sql_builder.h"
     type: "source-code"
-    sha1: "2526dfe3693a7903bca7fbd8187b0a3f483b4b26"
+    sha1: "6b10d4ef850a6f4be33083d3817ff85ad45a4cc9"
   - source-file: "src/wsjcpp_sql_builder.cpp"
     target-file: "wsjcpp_sql_builder.cpp"
     type: "source-code"
-    sha1: "d5c3e4120a2be32c6df90913d7317f7aa1286b65"
+    sha1: "f849255096ab2f8ab8640483d8af50b1b5050e6f"
 
