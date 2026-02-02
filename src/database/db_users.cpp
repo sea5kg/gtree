@@ -89,7 +89,7 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
   {
     wsjcpp::SqlBuilder builder;
     builder.selectFrom("users")
-      .colum(solt)
+      .colum("solt")
       .where().equal("name", name)
     ;
     DatabaseSelectRows cur;

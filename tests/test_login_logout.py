@@ -9,7 +9,7 @@ resp = requests.post("http://localhost:10555/api/", json={
     "method": "doLogin",
     "id": str(uuid.uuid4()),
     "params": {
-        "name": "admin",
+        "email": "admin",
         "pass": "admin",
     },
 })
