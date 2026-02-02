@@ -155,6 +155,10 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     return doLogout(req_json_body, msg_id, auth, resp);
   } else if (method == "createUser") {
     return createUser(req_json_body, msg_id, auth, resp);
+  } else if (method == "removeUser") {
+    return removeUser(req_json_body, msg_id, auth, resp);
+  } else if (method == "updateUserPassword") {
+    return updateUserPassword(req_json_body, msg_id, auth, resp);
   }
 
   return respError(resp, 404, m_respErrUnknownMethod);
@@ -316,4 +320,81 @@ int WebServer::createUser(const nlohmann::json &req, const std::string &msg_id, 
   result["email"] = email;
   result["role"] = role;
   return respResult(resp, result, msg_id);
+}
+
+int WebServer::removeUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+  UserSession req_session = m_pUsers->findSession(auth);
+
+  if (req_session.uuid == "") {
+    return respError(resp, 401, m_respErrNotAuthorized);
+  }
+
+  if (req_session.user.role != "admin") {
+    return respError(resp, 403, m_respErrAllowedOnlyAdmin);
+  }
+
+  if (!req["params"].is_object()) {
+    // std::cerr << "Not found field method " << std::endl;
+    return respError(resp, 400, m_respErrWrongParamsField);
+  }
+
+  if (!req["params"]["email"].is_string()) {
+    return respError(resp, 400, 10004, "Missing field 'email' or wrong type", msg_id);
+  }
+
+  std::string email = req["params"]["email"];
+
+  // TODO check remove self
+
+  std::string error = "Not implemented";
+  return respError(resp, 501, 10008, error, msg_id);
+
+  // if (!m_pUsers->createUser(email, pass, role, error)) {
+  //   return respError(resp, 401, 10007, error, msg_id);
+  // }
+
+  // nlohmann::json result;
+  // result["email"] = email;
+  // result["role"] = role;
+  // return respResult(resp, result, msg_id);
+}
+
+int WebServer::updateUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+  UserSession req_session = m_pUsers->findSession(auth);
+
+  if (req_session.uuid == "") {
+    return respError(resp, 401, m_respErrNotAuthorized);
+  }
+
+  if (req_session.user.role != "admin") { // or same user
+    return respError(resp, 403, m_respErrAllowedOnlyAdmin);
+  }
+
+  if (!req["params"].is_object()) {
+    // std::cerr << "Not found field method " << std::endl;
+    return respError(resp, 400, m_respErrWrongParamsField);
+  }
+
+  if (!req["params"]["email"].is_string()) {
+    return respError(resp, 400, 10004, "Missing field 'email' or wrong type", msg_id);
+  }
+
+  if (!req["params"]["pass"].is_string()) {
+    return respError(resp, 400, 10004, "Missing field 'pass' or wrong type", msg_id);
+  }
+
+  std::string email = req["params"]["email"];
+  std::string pass = req["params"]["pass"];
+
+  std::string error = "Not implemented";
+  return respError(resp, 501, 10008, error, msg_id);
+
+  // if (!m_pUsers->createUser(email, pass, role, error)) {
+  //   return respError(resp, 401, 10007, error, msg_id);
+  // }
+
+  // nlohmann::json result;
+  // result["email"] = email;
+  // result["role"] = role;
+  // return respResult(resp, result, msg_id);
 }
