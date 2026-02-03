@@ -48,7 +48,7 @@ private:
   int doLogout(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int createUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int removeUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int updateUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
+  int changeUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
 
   std::string TAG;
   hv::HttpService *m_pHttpService;

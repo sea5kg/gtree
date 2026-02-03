@@ -188,6 +188,41 @@ bool DbUsers::removeUser(const std::string &uuid) {
   return this->executeQuery(builder.sql());
 }
 
+bool DbUsers::changeUserPassword(const std::string &uuid, const std::string &pass, std::string &error) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
+  std::string solt = findSoltByUuid(uuid);
+  if (solt == "") {
+    error = "Could no find record in database (solt)";
+    return false;
+  }
+  std::string sha1_pass = WsjcppHashes::getSha1ByString(pass + solt);
+
+  wsjcpp::SqlBuilder builder;
+  builder.update("users")
+    .set("pass", sha1_pass)
+    .where().equal("uuid", uuid)
+  ;
+  return this->executeQuery(builder.sql());
+}
+
+std::string DbUsers::findSoltByUuid(const std::string &uuid) {
+  wsjcpp::SqlBuilder builder;
+  builder.selectFrom("users")
+    .colum("solt")
+    .where().equal("uuid", uuid)
+  ;
+  DatabaseSelectRows cur;
+  if (!this->selectRows(builder.sql(), cur)) {
+    return "";
+  }
+  if (!cur.next()) {
+    return "";
+  }
+  std::string solt = cur.getString(0);
+  return solt;
+}
+
 std::string DbUsers::createRandomSolt() {
     std::string sRet = "0000000000";
     const std::string sAlphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

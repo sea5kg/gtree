@@ -53,3 +53,36 @@ resp = requests.post("http://localhost:10555/api/", headers={
 
 print(resp.status_code)
 print(resp.json())
+
+print("createUser (2)")
+resp = requests.post("http://localhost:10555/api/", headers={
+    "Authorization": session_admin,
+}, json={
+    "jsonrpc": "2.0",
+    "method": "createUser",
+    "id": str(uuid.uuid4()),
+    "params": {
+        "email": "test_user",
+        "pass": "qwerty",
+        "role": "user",
+    },
+})
+
+print(resp.status_code)
+print(resp.json())
+
+print("changeUserPassword")
+resp = requests.post("http://localhost:10555/api/", headers={
+    "Authorization": session_admin,
+}, json={
+    "jsonrpc": "2.0",
+    "method": "changeUserPassword",
+    "id": str(uuid.uuid4()),
+    "params": {
+        "email": "test_user",
+        "pass": "qwerty2",
+    },
+})
+
+print(resp.status_code)
+print(resp.json())

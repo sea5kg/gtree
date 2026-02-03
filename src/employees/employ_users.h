@@ -52,6 +52,7 @@ public:
   UserSession findSession(const std::string &uuid);
   bool createUser(const std::string &email, const std::string &pass, const std::string &role, std::string &error);
   bool removeUser(const std::string &email, std::string &error);
+  bool changeUserPassword(const std::string &email, const std::string &pass, std::string &error);
 
 private:
   std::mutex m_mutex;

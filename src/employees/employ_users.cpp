@@ -168,7 +168,6 @@ bool EmployUsers::createUser(const std::string &email, const std::string &pass, 
   return true;
 }
 
-
 bool EmployUsers::removeUser(const std::string &email, std::string &error) {
   auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
 
@@ -180,6 +179,23 @@ bool EmployUsers::removeUser(const std::string &email, std::string &error) {
 
   if (!dbUsers->removeUser(user_uuid)) {
     error = "Could not create user '" + email + "'";
+    return false;
+  }
+
+  return true;
+}
+
+bool EmployUsers::changeUserPassword(const std::string &email, const std::string &pass, std::string &error) {
+  auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
+
+  std::string user_uuid = dbUsers->findUserUuid(email);
+  if (user_uuid == "") {
+    error = "User not found with email '" + email + "'";
+    return false;
+  }
+
+  if (!dbUsers->changeUserPassword(user_uuid, pass, error)) {
+    error = "Could not update password for '" + email + "', error = " + error;
     return false;
   }
 
