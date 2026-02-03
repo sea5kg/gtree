@@ -344,19 +344,21 @@ int WebServer::removeUser(const nlohmann::json &req, const std::string &msg_id, 
 
   std::string email = req["params"]["email"];
 
-  // TODO check remove self
+  if (req_session.user.email == email) {
+    return respError(resp, 403, 10008, "You can not delete yourself", msg_id);
+  }
 
-  std::string error = "Not implemented";
-  return respError(resp, 501, 10008, error, msg_id);
+  std::string error;
+  if (!m_pUsers->removeUser(email, error)) {
+    return respError(resp, 401, 10009, error, msg_id);
+  }
 
-  // if (!m_pUsers->createUser(email, pass, role, error)) {
-  //   return respError(resp, 401, 10007, error, msg_id);
-  // }
+  // TODO remove from uuids
+  // TODO remove from sessions
 
-  // nlohmann::json result;
-  // result["email"] = email;
-  // result["role"] = role;
-  // return respResult(resp, result, msg_id);
+  nlohmann::json result;
+  result["email"] = email;
+  return respResult(resp, result, msg_id);
 }
 
 int WebServer::updateUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {

@@ -167,3 +167,21 @@ bool EmployUsers::createUser(const std::string &email, const std::string &pass, 
 
   return true;
 }
+
+
+bool EmployUsers::removeUser(const std::string &email, std::string &error) {
+  auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
+
+  std::string user_uuid = dbUsers->findUserUuid(email);
+  if (user_uuid == "") {
+    error = "User not found with email '" + email + "'";
+    return false;
+  }
+
+  if (!dbUsers->removeUser(user_uuid)) {
+    error = "Could not create user '" + email + "'";
+    return false;
+  }
+
+  return true;
+}

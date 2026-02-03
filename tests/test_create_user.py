@@ -37,3 +37,19 @@ resp = requests.post("http://localhost:10555/api/", headers={
 
 print(resp.status_code)
 print(resp.json())
+
+
+print("removeUser")
+resp = requests.post("http://localhost:10555/api/", headers={
+    "Authorization": session_admin,
+}, json={
+    "jsonrpc": "2.0",
+    "method": "removeUser",
+    "id": str(uuid.uuid4()),
+    "params": {
+        "email": "some_user",
+    },
+})
+
+print(resp.status_code)
+print(resp.json())

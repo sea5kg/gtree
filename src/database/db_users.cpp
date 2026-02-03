@@ -179,6 +179,15 @@ bool DbUsers::createUser(
   return this->executeQuery(builder.sql());
 }
 
+bool DbUsers::removeUser(const std::string &uuid) {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  wsjcpp::SqlBuilder builder;
+  builder.deleteFrom("users")
+    .where().equal("uuid", uuid)
+  ;
+  return this->executeQuery(builder.sql());
+}
+
 std::string DbUsers::createRandomSolt() {
     std::string sRet = "0000000000";
     const std::string sAlphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
