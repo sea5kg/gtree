@@ -309,6 +309,27 @@ function load_persons() {
   });
 }
 
+function init_modals() {
+  const elm1 = document.getElementById('modal_sign_in');
+  window.modal_sing_in = new bootstrap.Modal(elm1);
+}
+
+function signin_test() {
+  $.ajax({
+    url: "./api/v1/cpp",
+    type: "POST",
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({ key: 'value' }),
+    success: function(result) {
+      console.log(result)
+    },
+    error: function(jqXHR, textStatus, errorThrown) { // Callback function if the request fails
+      console.log("Error: " + textStatus);
+    }
+  });
+}
+
 // on loaded document
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -336,5 +357,7 @@ document.addEventListener("DOMContentLoaded", function() {
   load_tree2();
 
   load_persons();
+
+  init_modals();
 });
 

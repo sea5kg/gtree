@@ -35,3 +35,8 @@ body {
   word-wrap: break-word;
   white-space: pre-wrap;
 }
+
+.navbar {
+  padding-left: 20px;
+  padding-right: 50px;
+}
