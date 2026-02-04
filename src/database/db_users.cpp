@@ -224,10 +224,8 @@ std::string DbUsers::findSoltByUuid(const std::string &uuid) {
 }
 
 std::string DbUsers::createRandomSolt() {
-    std::string sRet = "0000000000";
-    const std::string sAlphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (int i = 0; i < 10; i++) {
-        sRet[i] = sAlphabet[rand() % sAlphabet.length()];
-    }
-    return sRet;
+    return wsjcpp::Core::randomString(
+      wsjcpp::Core::englishAlphabetBothCaseAndNumbers(),
+      10
+    );
 }
