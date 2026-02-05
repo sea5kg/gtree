@@ -315,9 +315,15 @@ function init_modals() {
 }
 
 function signin_test() {
+  // $.post('./api/v1/cpp', {text: 'Текст'}, function(data){
+  //   console.log("data: " + data);
+  // }, function(error) {
+  //   console.log("Error: " + error);
+  // });
+
   $.ajax({
-    url: "./api/v1/cpp",
     type: "POST",
+    url: "./api/v1/cpp/",
     contentType: 'application/json',
     dataType: 'json',
     data: JSON.stringify({ key: 'value' }),
