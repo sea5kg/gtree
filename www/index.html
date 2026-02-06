@@ -101,7 +101,16 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            ...your content here...
+            <form>
+              <div class="mb-3">
+                <label for="signinFormLogin" class="form-label">Логин</label>
+                <input type="email" class="form-control" id="signinFormLogin" aria-describedby="emailHelp">
+              </div>
+              <div class="mb-3">
+                <label for="signinFormPassword" class="form-label">Пароль</label>
+                <input type="password" class="form-control" id="signinFormPassword">
+              </div>
+            </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>

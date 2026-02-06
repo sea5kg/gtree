@@ -18,6 +18,49 @@ function localize_captions(selected_lang) {
   $('#download_tree').text(LANG.download[selected_lang])
 }
 
+
+function gtree_api(method, params) {
+  var deferred = $.Deferred();
+  headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+  };
+  var session = localStorage.getItem("auth_session");
+  var expired_at = localStorage.getItem("auth_expired_at");
+  if (session !== null && expired_at !== null) {
+    if (Date.now() / 1000 < expired_at) {
+      headers["Authorization"] = session;
+    } else {
+      console.error("session is outdated");
+    }
+  }
+
+  $.ajax({
+    type: "POST",
+    url: "./api/v1/cpp/",
+    headers: headers,
+    dataType: 'json',
+    data: JSON.stringify({
+      "jsonrpc": "2.0",
+      "id": crypto.randomUUID(),
+      "method": method,
+      params: params
+    }),
+  })
+  .done(function(data) {
+    if (method == "doLogin") {
+      localStorage.setItem("auth_expired_at", data["result"]["expired_at"]);
+      localStorage.setItem("auth_session", data["result"]["session"]);
+    }
+    deferred.resolve(data["result"]);
+  }).fail(function(jqXHR, textStatus, errorThrown) {
+    console.error("Error:", textStatus);
+    deferred.reject(textStatus);
+  });
+  return deferred.promise();
+}
+
+
 function parsePageParams() {
     var loc = location.search.slice(1);
     var arr = loc.split("&");
@@ -315,24 +358,15 @@ function init_modals() {
 }
 
 function signin_test() {
-  // $.post('./api/v1/cpp', {text: 'Текст'}, function(data){
-  //   console.log("data: " + data);
-  // }, function(error) {
-  //   console.log("Error: " + error);
-  // });
-
-  $.ajax({
-    type: "POST",
-    url: "./api/v1/cpp/",
-    contentType: 'application/json',
-    dataType: 'json',
-    data: JSON.stringify({ key: 'value' }),
-    success: function(result) {
-      console.log(result)
-    },
-    error: function(jqXHR, textStatus, errorThrown) { // Callback function if the request fails
-      console.log("Error: " + textStatus);
-    }
+  gtree_api("doLogin", {
+    "email": $('#signinFormLogin').val(),
+    "pass": $('#signinFormPassword').val(),
+  })
+  .done(function(data) {
+    // TODO process after success authorization
+    console.log(data);
+  }).fail(function(error) {
+    console.error(error);
   });
 }
 

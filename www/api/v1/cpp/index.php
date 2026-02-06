@@ -13,14 +13,22 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $data = json_decode(file_get_contents('php://input'), true);
 $payload = json_encode($data, JSON_PRETTY_PRINT);
 
+$headers = array(
+    'Content-Type: application/json',
+    'Content-Length: ' . strlen($payload)
+);
+
+$income_headers = getallheaders();
+
+if (isset($income_headers["Authorization"])) {
+    $headers["Authorization"] = $income_headers["Authorization"];
+}
+
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, 'http://web-cpp:10555/api/');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Content-Type: application/json',
-    'Content-Length: ' . strlen($payload)
-));
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
 $response = curl_exec($ch);
@@ -28,7 +36,10 @@ $response = curl_exec($ch);
 $http_code = 500;
 
 if (curl_errno($ch)) {
-    echo 'cURL error: ' . curl_error($ch);
+    $data = array(
+        "cURL error" => curl_error($ch),
+    );
+    $response = json_encode($data, JSON_PRETTY_PRINT);
 } else {
     // Get information about the transfer
     $info = curl_getinfo($ch);
