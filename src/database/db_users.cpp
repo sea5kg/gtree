@@ -120,11 +120,12 @@ std::pair<std::string, std::string> DbUsers::findUserByNameAndPass(const std::st
     if (!this->selectRows(builder.sql(), cur)) {
       return std::pair<std::string, std::string>("", "");
     }
-    cur.next();
+    if (!cur.next()) {
+      return std::pair<std::string, std::string>("", "");
+    }
     uuid = cur.getString(0);
     role = cur.getString(1);
   }
-
   return std::pair<std::string, std::string>(uuid, role);
 }
 

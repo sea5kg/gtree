@@ -245,10 +245,10 @@ int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, con
   }
 
   if (!req["params"]["email"].is_string()) {
-    return respError(resp, 400, 10002, "Missing field 'email' or wrong type", msg_id);
+    return respError(resp, 400, 10012, "Missing field 'email' or wrong type", msg_id);
   }
   if (!req["params"]["pass"].is_string()) {
-    return respError(resp, 400, 10002, "Missing field 'pass' or wrong type", msg_id);
+    return respError(resp, 400, 10022, "Missing field 'pass' or wrong type", msg_id);
   }
   std::string email = req["params"]["email"];
   std::string pass = req["params"]["pass"];
