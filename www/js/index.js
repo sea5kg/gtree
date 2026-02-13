@@ -50,16 +50,60 @@ function gtree_api(method, params) {
   .done(function(data) {
     if (method == "doLogin") {
       localStorage.setItem("auth_expired_at", data["result"]["expired_at"]);
+      // TODO server time process
+      // localStorage.setItem("auth_expired_at", data["result"]["expired_at"]);
       localStorage.setItem("auth_session", data["result"]["session"]);
+      localStorage.setItem("auth_user_role", data["result"]["user"]["role"]);
+      localStorage.setItem("auth_user_email", data["result"]["user"]["email"]);
+    }
+    if (method == "doLogout") {
+      localStorage.removeItem("auth_expired_at");
+      localStorage.removeItem("auth_session");
+      localStorage.removeItem("auth_user_role");
+      localStorage.removeItem("auth_user_email");
     }
     deferred.resolve(data["result"]);
   }).fail(function(jqXHR, textStatus, errorThrown) {
-    console.error("Error:", textStatus);
-    deferred.reject(textStatus);
+    var errorData = {};
+    try {
+        var errorData = JSON.parse(jqXHR.responseText);
+    } catch (e) {
+        console.error('Could not parse JSON from error response:', e);
+    }
+    deferred.reject(errorData);
   });
   return deferred.promise();
 }
 
+function gtree_api_check_session() {
+  var deferred = $.Deferred();
+
+  var auth_sess = localStorage.getItem("auth_session");
+  if (auth_sess == null) {
+    deferred.reject(false);
+    return deferred.promise();
+  }
+
+  var auth_expired_at = localStorage.getItem("auth_expired_at");
+  if (auth_expired_at === null) {
+    localStorage.removeItem("auth_session");
+    localStorage.removeItem("auth_expired_at");
+    deferred.reject(false);
+    return deferred.promise();
+  }
+
+  var current_time = new Date().getTime() / 1000;
+
+  if (current_time > auth_expired_at) {
+    console.warn("session outdated");
+    localStorage.removeItem("auth_session");
+    localStorage.removeItem("auth_expired_at");
+    deferred.reject(false);
+    return deferred.promise();
+  }
+
+  return gtree_api("checkAuth", {});
+}
 
 function parsePageParams() {
     var loc = location.search.slice(1);
@@ -246,7 +290,7 @@ function load_tree2() {
       update_gtree(ctx);
     },
     error: function(jqXHR, textStatus, errorThrown) { // Callback function if the request fails
-      console.log("Error: " + textStatus);
+      console.log("load_tree2 error: " + textStatus);
     }
   });
 }
@@ -342,7 +386,7 @@ function load_persons() {
       apply_persons_filter();
     },
     error: function(jqXHR, textStatus, errorThrown) { // Callback function if the request fails
-      console.log("Error: " + textStatus);
+      console.log("load_persons error: " + textStatus);
     }
   });
 
@@ -353,20 +397,83 @@ function load_persons() {
 }
 
 function init_modals() {
+
+  // sign in
   const elm1 = document.getElementById('modal_sign_in');
-  window.modal_sing_in = new bootstrap.Modal(elm1);
+  window.obj_modal_sing_in = new bootstrap.Modal(elm1);
+  $('#signinFormErrorText').hide();
+
+  // sign out
+  const elm2 = document.getElementById('modal_sign_out');
+  window.obj_modal_sing_out = new bootstrap.Modal(elm2);
+  $('#signoutFormErrorText').hide();
 }
 
-function signin_test() {
+function check_auth() {
+  $('#menu_signin').hide();
+  $('#menu_signout').hide();
+
+  gtree_api_check_session().fail(function() {
+    $('#menu_signin').show();
+    $('#menu_signout').hide();
+    // console.error("not authorized");
+    $('#navbarDropdownMenuLink').html("Пользователь");
+  }).done(function() {
+    // console.log("seassion is ok");
+    $('#menu_signin').hide();
+    $('#menu_signout').show();
+    role = localStorage.getItem("auth_user_role")
+    email = localStorage.getItem("auth_user_email");
+    if (role == "admin") {
+      role = "Администратор системы";
+    }
+    $('#navbarDropdownMenuLink').html(role + ": " + email);
+  })
+}
+
+function show_sign_in() {
+  $('#signinFormErrorText').hide();
+  window.obj_modal_sing_in.show();
+}
+
+function show_sign_out() {
+  $('#signoutFormErrorText').hide();
+  window.obj_modal_sing_out.show();
+}
+
+function do_logon() {
+  $('#signinFormErrorText').hide()
   gtree_api("doLogin", {
     "email": $('#signinFormLogin').val(),
     "pass": $('#signinFormPassword').val(),
   })
   .done(function(data) {
-    // TODO process after success authorization
-    console.log(data);
-  }).fail(function(error) {
-    console.error(error);
+    obj_modal_sing_in.hide();
+    check_auth();
+  }).fail(function(data) {
+    var error_code = data["error"]["code"];
+    // TODO localization by error code
+    console.error("error", data);
+    $('#signinFormErrorText').html("Code " + error_code + ". " + data["error"]["message"]);
+    $('#signinFormErrorText').show();
+  });
+}
+
+function do_logout() {
+  $('#signoutFormErrorText').hide()
+  gtree_api("doLogout", {
+    "email": $('#signinFormLogin').val(),
+    "pass": $('#signinFormPassword').val(),
+  })
+  .done(function(data) {
+    obj_modal_sing_out.hide();
+    check_auth();
+  }).fail(function(data) {
+    var error_code = data["error"]["code"];
+    // TODO localization by error code
+    console.error("error", data);
+    $('#signoutFormErrorText').html("Code " + error_code + ". " + data["error"]["message"]);
+    $('#signoutFormErrorText').show();
   });
 }
 
@@ -399,5 +506,7 @@ document.addEventListener("DOMContentLoaded", function() {
   load_persons();
 
   init_modals();
+
+  check_auth();
 });
 

@@ -42,7 +42,8 @@
               Пользователь
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li><a class="dropdown-item" href="#" onclick="window.modal_sing_in.show()">Вход</a></li>
+              <li><a class="dropdown-item" id="menu_signin" href="#" onclick="show_sign_in()">Вход</a></li>
+              <li><a class="dropdown-item" id="menu_signout" href="#" onclick="show_sign_out()">Выход</a></li>
               <!-- li><a class="dropdown-item" href="#">Another action</a></li>
               <li><a class="dropdown-item" href="#">Something else here</a></li -->
             </ul>
@@ -92,7 +93,7 @@
 
     </div>
 
-    <!-- The Modal Login -->
+    <!-- The Modal Sign In -->
     <div class="modal fade" id="modal_sign_in" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -110,11 +111,40 @@
                 <label for="signinFormPassword" class="form-label">Пароль</label>
                 <input type="password" class="form-control" id="signinFormPassword">
               </div>
+              <div class="mb-3 alert alert-danger" id="signinFormErrorText">
+                Error
+              </div>
             </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-            <button type="button" class="btn btn-primary" onclick="signin_test()">Войти</button>
+            <button type="button" class="btn btn-primary" onclick="do_logon()">Войти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Modal Sign Out -->
+    <div class="modal fade" id="modal_sign_out" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel">Выйти из системы</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                Действительно желаете выйти из системы?
+              </div>
+              <div class="mb-3 alert alert-danger" id="signoutFormErrorText">
+                Error
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button type="button" class="btn btn-primary" onclick="do_logout()">Да выйти</button>
           </div>
         </div>
       </div>

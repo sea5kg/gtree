@@ -149,7 +149,9 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     msg_id = req_json_body["id"];
   }
 
-  if (method == "doLogin") {
+  if (method == "checkAuth") {
+    return checkAuth(req_json_body, msg_id, auth, resp);
+  } else if (method == "doLogin") {
     return doLogin(req_json_body, msg_id, auth, resp);
   } else if (method == "doLogout") {
     return doLogout(req_json_body, msg_id, auth, resp);
@@ -232,6 +234,19 @@ int WebServer::respResult(HttpResponse* resp, const nlohmann::json &result, cons
   );
 }
 
+int WebServer::checkAuth(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+  // auth
+  UserSession req_session = m_pUsers->findSession(auth);
+  if (req_session.uuid == "") {
+    return respError(resp, 401, m_respErrNotAuthorized);
+  }
+
+  nlohmann::json result;
+  result["session"] = req_session.uuid;
+  result["server_time"] = WsjcppCore::getCurrentTimeInSeconds();
+  return respResult(resp, result, msg_id);
+}
+
 int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
   // auth
   UserSession req_session = m_pUsers->findSession(auth);
@@ -259,7 +274,12 @@ int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, con
 
   nlohmann::json result;
   result["session"] = session.uuid;
+  nlohmann::json user;
+  user["email"] = session.user.email;
+  user["role"] = session.user.role;
+  result["user"] = user;
   result["expired_at"] = session.expired_at;
+  result["server_time"] = WsjcppCore::getCurrentTimeInSeconds();
   return respResult(resp, result, msg_id);
 }
 

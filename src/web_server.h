@@ -44,6 +44,7 @@ private:
   int respError(HttpResponse* resp, int ret_code, const std::string &text);
   int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
   int respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id);
+  int checkAuth(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int doLogin(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int doLogout(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int createUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
