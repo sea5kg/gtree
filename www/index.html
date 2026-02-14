@@ -43,6 +43,10 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <li><a class="dropdown-item" id="menu_signin" href="#" onclick="show_sign_in()">Вход</a></li>
+              <li><a class="dropdown-item" id="menu_change_pass" href="#" onclick="show_change_pass()">Сменить пароль</a></li>
+              <!-- li><a class="dropdown-item" id="menu_signout" href="#" onclick="show_change_pass()">Пользователи</a></li -->
+               <!-- li><a class="dropdown-item" id="menu_signout" href="#" onclick="show_change_pass()">Экспорт данных</a></li -->
+                <!-- li><a class="dropdown-item" id="menu_signout" href="#" onclick="show_change_pass()">Импорт данных</a></li -->
               <li><a class="dropdown-item" id="menu_signout" href="#" onclick="show_sign_out()">Выход</a></li>
               <!-- li><a class="dropdown-item" href="#">Another action</a></li>
               <li><a class="dropdown-item" href="#">Something else here</a></li -->
@@ -149,5 +153,42 @@
         </div>
       </div>
     </div>
+
+     <!-- The Modal Change Pass -->
+    <div class="modal fade" id="modal_change_pass" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel">Сменить пароль</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="changepassFormPasswordOld" class="form-label">Предыдущий пароль</label>
+                <input type="password" class="form-control" id="changepassFormPasswordOld">
+              </div>
+              <div class="mb-3">
+                <label for="changepassFormPasswordNew" class="form-label">Новый Пароль</label>
+                <input type="password" class="form-control" id="changepassFormPasswordNew">
+              </div>
+              <div class="mb-3">
+                <label for="changepassFormPasswordNewAgain" class="form-label">Новый Пароль (Еще раз)</label>
+                <input type="password" class="form-control" id="changepassFormPasswordNewAgain">
+              </div>
+              <div class="mb-3 alert alert-danger" id="changepassFormErrorText">
+                Error
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button type="button" class="btn btn-primary" onclick="do_change_pass()">Обновить пароль</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </body>
 </html>

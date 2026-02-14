@@ -407,11 +407,17 @@ function init_modals() {
   const elm2 = document.getElementById('modal_sign_out');
   window.obj_modal_sing_out = new bootstrap.Modal(elm2);
   $('#signoutFormErrorText').hide();
+
+  // change pass
+  const elm3 = document.getElementById('modal_change_pass');
+  window.obj_modal_change_pass = new bootstrap.Modal(elm3);
+  $('#changepassFormErrorText').hide();
 }
 
 function check_auth() {
   $('#menu_signin').hide();
   $('#menu_signout').hide();
+  $('#menu_change_pass').hide();
 
   gtree_api_check_session().fail(function() {
     $('#menu_signin').show();
@@ -422,6 +428,7 @@ function check_auth() {
     // console.log("seassion is ok");
     $('#menu_signin').hide();
     $('#menu_signout').show();
+    $('#menu_change_pass').show();
     role = localStorage.getItem("auth_user_role")
     email = localStorage.getItem("auth_user_email");
     if (role == "admin") {
@@ -439,6 +446,11 @@ function show_sign_in() {
 function show_sign_out() {
   $('#signoutFormErrorText').hide();
   window.obj_modal_sing_out.show();
+}
+
+function show_change_pass() {
+  $('#changepassFormErrorText').hide();
+  window.obj_modal_change_pass.show();
 }
 
 function do_logon() {
@@ -476,6 +488,32 @@ function do_logout() {
     $('#signoutFormErrorText').show();
   });
 }
+
+function do_change_pass() {
+  $('#changepassFormErrorText').hide()
+  const new_pass = $('#signinFormPasswordNew').val();
+  const new_pass_again = $('#signinFormPasswordNew').val();
+  if (new_pass != new_pass_again) {
+    $('#changepassFormErrorText').html("Новый пароль не совпадает с повтором");
+    $('#changepassFormErrorText').show();
+    return;
+  }
+
+  gtree_api("changePassword", {
+    "old_pass": $('#signinFormPasswordOld').val(),
+    "new_pass": $('#signinFormPasswordNew').val(),
+  })
+  .done(function(data) {
+    obj_modal_sing_out.hide();
+  }).fail(function(data) {
+    var error_code = data["error"]["code"];
+    // TODO localization by error code
+    console.error("error", data);
+    $('#changepassFormErrorText').html("Code " + error_code + ". " + data["error"]["message"]);
+    $('#changepassFormErrorText').show();
+  });
+}
+
 
 // on loaded document
 
