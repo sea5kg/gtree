@@ -185,7 +185,7 @@ bool EmployUsers::removeUser(const std::string &email, std::string &error) {
   return true;
 }
 
-bool EmployUsers::changeUserPassword(const std::string &email, const std::string &pass, std::string &error) {
+bool EmployUsers::resetUserPassword(const std::string &email, const std::string &pass, std::string &error) {
   auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
 
   std::string user_uuid = dbUsers->findUserUuid(email);
@@ -195,6 +195,28 @@ bool EmployUsers::changeUserPassword(const std::string &email, const std::string
   }
 
   if (!dbUsers->changeUserPassword(user_uuid, pass, error)) {
+    error = "Could not update password for '" + email + "', error = " + error;
+    return false;
+  }
+
+  return true;
+}
+
+bool EmployUsers::changePassword(const std::string &email, const std::string &old_pass, const std::string &new_pass, std::string &error) {
+  auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
+
+  std::string user_uuid = dbUsers->findUserUuid(email);
+  if (user_uuid == "") {
+    error = "User not found with email '" + email + "'";
+    return false;
+  }
+  std::pair<std::string, std::string> res = dbUsers->findUserByNameAndPass(email, old_pass);
+  if (res.first == "") {
+    error = "Wrong password?";
+    return false;
+  }
+
+  if (!dbUsers->changeUserPassword(user_uuid, new_pass, error)) {
     error = "Could not update password for '" + email + "', error = " + error;
     return false;
   }

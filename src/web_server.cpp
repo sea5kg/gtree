@@ -69,9 +69,7 @@ WebServer::WebServer() {
   m_respErrMissingJsonRPCField = jsonrpc20ErrorResponse(1004, "Missing field 'jsonrpc'");
   m_respErrMissingMethodField = jsonrpc20ErrorResponse(1005, "Missing field 'method'");
   m_respErrUnknownMethod = jsonrpc20ErrorResponse(1006, "Unknown method");
-  m_respErrWrongParamsField = jsonrpc20ErrorResponse(1007, "Missing or unexpected type for field 'params'");
   m_respErrAlreadyAuthorized = jsonrpc20ErrorResponse(1008, "You already authorized");
-  m_respErrNotAuthorized = jsonrpc20ErrorResponse(1009, "You not authorized");
   m_respErrAllowedOnlyAdmin = jsonrpc20ErrorResponse(1010, "Allowed only for admin");
 }
 
@@ -159,8 +157,10 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     return createUser(req_json_body, msg_id, auth, resp);
   } else if (method == "removeUser") {
     return removeUser(req_json_body, msg_id, auth, resp);
-  } else if (method == "changeUserPassword") {
-    return changeUserPassword(req_json_body, msg_id, auth, resp);
+  } else if (method == "resetUserPassword") {
+    return resetUserPassword(req_json_body, msg_id, auth, resp);
+  } else if (method == "changePassword") {
+    return changePassword(req_json_body, msg_id, auth, resp);
   }
 
   return respError(resp, 404, m_respErrUnknownMethod);
@@ -218,6 +218,41 @@ int WebServer::respError(HttpResponse* resp, int ret_code, int code_error, const
   return respError(resp, ret_code, text);
 }
 
+int WebServer::respError(HttpResponse* resp, int ret_code, const GTreeError &error, const std::string &msg_id) {
+  nlohmann::json resp_json;
+  resp_json["jsonrpc"] = "2.0";
+  resp_json["error"] = nlohmann::json();
+  resp_json["error"]["code"] = error.code;
+  resp_json["error"]["message"] = error.msg;
+  resp_json["error"]["message_ru"] = error.msg_ru;
+  if (msg_id != "") {
+    resp_json["id"] = msg_id;
+  }
+  // TODO data
+  // "error":{
+  //    "code": 10,
+  //    "message": "Unauthorized action",
+  //    "data":[
+  //       {
+  //          "code": 2,
+  //          "message":"Denied privileged API access for uid=XXX gid=XXX"
+  //       }
+  //    ]
+  // "id":"5e273ec0-3e3b-4a81-90ec-aeee3d38073f"
+  std::string text = resp_json.dump();
+  return respError(resp, ret_code, text);
+}
+
+int WebServer::respError400(HttpResponse* resp, const GTreeError &info, const std::string &msg_id) {
+  const int ret_code = 400;
+  return respError(resp, ret_code, info, msg_id);
+}
+
+int WebServer::respError401(HttpResponse* resp, const GTreeError &info, const std::string &msg_id) {
+  const int ret_code = 401;
+  return respError(resp, ret_code, info, msg_id);
+}
+
 int WebServer::respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id) {
   nlohmann::json resp_json;
   resp_json["jsonrpc"] = "2.0";
@@ -238,7 +273,7 @@ int WebServer::checkAuth(const nlohmann::json &req, const std::string &msg_id, c
   // auth
   UserSession req_session = m_pUsers->findSession(auth);
   if (req_session.uuid == "") {
-    return respError(resp, 401, m_respErrNotAuthorized);
+    return respError401(resp, ERR_01009_NOT_AUTHORIZED, msg_id);
   }
 
   nlohmann::json result;
@@ -255,8 +290,7 @@ int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, con
   }
 
   if (!req["params"].is_object()) {
-    // std::cerr << "Not found field method " << std::endl;
-    return respError(resp, 400, m_respErrWrongParamsField);
+    return respError400(resp, ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS, msg_id);
   }
 
   if (!req["params"]["email"].is_string()) {
@@ -287,7 +321,7 @@ int WebServer::doLogout(const nlohmann::json &req, const std::string &msg_id, co
   UserSession req_session = m_pUsers->findSession(auth);
 
   if (req_session.uuid == "") {
-    return respError(resp, 401, m_respErrNotAuthorized);
+    return respError401(resp, ERR_01009_NOT_AUTHORIZED, msg_id);
   }
 
   if (!m_pUsers->doLogout(req_session.uuid)) {
@@ -303,7 +337,7 @@ int WebServer::createUser(const nlohmann::json &req, const std::string &msg_id, 
   UserSession req_session = m_pUsers->findSession(auth);
 
   if (req_session.uuid == "") {
-    return respError(resp, 401, m_respErrNotAuthorized);
+    return respError401(resp, ERR_01009_NOT_AUTHORIZED, msg_id);
   }
 
   if (req_session.user.role != "admin") {
@@ -312,7 +346,7 @@ int WebServer::createUser(const nlohmann::json &req, const std::string &msg_id, 
 
   if (!req["params"].is_object()) {
     // std::cerr << "Not found field method " << std::endl;
-    return respError(resp, 400, m_respErrWrongParamsField);
+    return respError400(resp, ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS, msg_id);
   }
 
   if (!req["params"]["email"].is_string()) {
@@ -346,7 +380,7 @@ int WebServer::removeUser(const nlohmann::json &req, const std::string &msg_id, 
   UserSession req_session = m_pUsers->findSession(auth);
 
   if (req_session.uuid == "") {
-    return respError(resp, 401, m_respErrNotAuthorized);
+    return respError401(resp, ERR_01009_NOT_AUTHORIZED, msg_id);
   }
 
   if (req_session.user.role != "admin") {
@@ -355,7 +389,7 @@ int WebServer::removeUser(const nlohmann::json &req, const std::string &msg_id, 
 
   if (!req["params"].is_object()) {
     // std::cerr << "Not found field method " << std::endl;
-    return respError(resp, 400, m_respErrWrongParamsField);
+    return respError400(resp, ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS, msg_id);
   }
 
   if (!req["params"]["email"].is_string()) {
@@ -381,16 +415,20 @@ int WebServer::removeUser(const nlohmann::json &req, const std::string &msg_id, 
   return respResult(resp, result, msg_id);
 }
 
-int WebServer::changeUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+int WebServer::resetUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
   UserSession req_session = m_pUsers->findSession(auth);
 
   if (req_session.uuid == "") {
-    return respError(resp, 401, m_respErrNotAuthorized);
+    return respError401(resp, ERR_01009_NOT_AUTHORIZED, msg_id);
+  }
+
+  if (req_session.user.role != "admin") {
+    return respError(resp, 403, "Allowed only admin changing password");
   }
 
   if (!req["params"].is_object()) {
     // std::cerr << "Not found field method " << std::endl;
-    return respError(resp, 400, m_respErrWrongParamsField);
+    return respError400(resp, ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS, msg_id);
   }
 
   if (!req["params"]["email"].is_string()) {
@@ -404,12 +442,41 @@ int WebServer::changeUserPassword(const nlohmann::json &req, const std::string &
   std::string email = req["params"]["email"];
   std::string pass = req["params"]["pass"];
 
-  if (req_session.user.role != "admin" && email != req_session.user.email) { // or same user
-    return respError(resp, 403, "Allowed only admin or you changing password for yourself");
+  std::string error;
+  if (!m_pUsers->resetUserPassword(email, pass, error)) {
+    return respError(resp, 401, 10011, error, msg_id);
   }
 
+  nlohmann::json result;
+  result["email"] = email;
+  return respResult(resp, result, msg_id);
+}
+
+int WebServer::changePassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp) {
+  UserSession req_session = m_pUsers->findSession(auth);
+
+  if (req_session.uuid == "") {
+    return respError401(resp, ERR_01009_NOT_AUTHORIZED, msg_id);
+  }
+
+  if (!req["params"].is_object()) {
+    return respError400(resp, ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS, msg_id);
+  }
+
+  if (!req["params"]["old_pass"].is_string()) {
+    return respError400(resp, ERR_10014_MISSING_FIELD_OLD_PASS, msg_id);
+  }
+
+  if (!req["params"]["new_pass"].is_string()) {
+    return respError400(resp, ERR_10013_MISSING_FIELD_NEW_PASS, msg_id);
+  }
+
+  std::string email = req_session.user.email;
+  std::string old_pass = req["params"]["old_pass"];
+  std::string new_pass = req["params"]["new_pass"];
+
   std::string error;
-  if (!m_pUsers->changeUserPassword(email, pass, error)) {
+  if (!m_pUsers->changePassword(email, old_pass, new_pass, error)) {
     return respError(resp, 401, 10011, error, msg_id);
   }
 

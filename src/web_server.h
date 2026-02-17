@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include "gt_errors.h"
+
 #include <string>
 #include <json.hpp>
 #include "HttpService.h"
@@ -43,13 +45,18 @@ private:
   std::string jsonrpc20ErrorResponse(int code, const std::string &msg, const std::string &msg_id = "");
   int respError(HttpResponse* resp, int ret_code, const std::string &text);
   int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
+  int respError(HttpResponse* resp, int ret_code, const GTreeError &info, const std::string &msg_id);
+  int respError400(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
+  int respError401(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
+
   int respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id);
   int checkAuth(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int doLogin(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int doLogout(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int createUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
   int removeUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int changeUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
+  int resetUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
+  int changePassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
 
   std::string TAG;
   hv::HttpService *m_pHttpService;
@@ -64,8 +71,6 @@ private:
   std::string m_respErrMissingJsonRPCField;
   std::string m_respErrMissingMethodField;
   std::string m_respErrUnknownMethod;
-  std::string m_respErrWrongParamsField;
   std::string m_respErrAlreadyAuthorized;
-  std::string m_respErrNotAuthorized;
   std::string m_respErrAllowedOnlyAdmin;
 };

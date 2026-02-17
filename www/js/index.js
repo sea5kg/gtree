@@ -491,8 +491,8 @@ function do_logout() {
 
 function do_change_pass() {
   $('#changepassFormErrorText').hide()
-  const new_pass = $('#signinFormPasswordNew').val();
-  const new_pass_again = $('#signinFormPasswordNew').val();
+  const new_pass = $('#changepassFormPasswordNew').val();
+  const new_pass_again = $('#changepassFormPasswordNewAgain').val();
   if (new_pass != new_pass_again) {
     $('#changepassFormErrorText').html("Новый пароль не совпадает с повтором");
     $('#changepassFormErrorText').show();
@@ -500,11 +500,11 @@ function do_change_pass() {
   }
 
   gtree_api("changePassword", {
-    "old_pass": $('#signinFormPasswordOld').val(),
-    "new_pass": $('#signinFormPasswordNew').val(),
+    "old_pass": $('#changepassFormPasswordOld').val(),
+    "new_pass": $('#changepassFormPasswordNew').val(),
   })
   .done(function(data) {
-    obj_modal_sing_out.hide();
+    obj_modal_change_pass.hide();
   }).fail(function(data) {
     var error_code = data["error"]["code"];
     // TODO localization by error code
