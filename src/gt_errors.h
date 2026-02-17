@@ -138,3 +138,10 @@ static const gtree::ResponseError ERR_10022_MISSING_FIELD_PASS(
     "Отсутствует поле 'pass' или имеет неправильный тип.",
     ""
 );
+
+static const gtree::ResponseError ERR_10023_ONLY_ADMIN_CAN_RESET_PASSWORD(
+    10023,
+    "Only admin can reset password.",
+    "Только администратор может сбросить пароль.",
+    ""
+);

@@ -161,7 +161,7 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   } else if (method == "doLogin") {
     return doLogin(req_json_body, context);
   } else if (method == "doLogout") {
-    return doLogout(req_json_body, resp, context);
+    return doLogout(req_json_body, context);
   } else if (method == "createUser") {
     return createUser(req_json_body, resp, context);
   } else if (method == "removeUser") {
@@ -362,7 +362,7 @@ int WebServer::removeUser(const nlohmann::json &req, HttpResponse* resp, std::sh
 
   std::string error;
   if (!m_pUsers->removeUser(email, error)) {
-    return respError(resp, 401, 10009, error, context->getMessageId());
+    return context->error403(gtree::ResponseError(10009, error, "", ""));
   }
 
   // TODO remove from uuids
@@ -381,7 +381,7 @@ int WebServer::resetUserPassword(const nlohmann::json &req, HttpResponse* resp, 
   }
 
   if (req_session.user.role != "admin") {
-    return respError(resp, 403, "Allowed only admin changing password");
+    return context->error403(ERR_10023_ONLY_ADMIN_CAN_RESET_PASSWORD);
   }
 
   if (!req["params"].is_object()) {
