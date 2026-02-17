@@ -17,6 +17,10 @@ set(EXECUTABLE_OUTPUT_PATH ${gtree_SOURCE_DIR})
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/employees")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/database")
+list (APPEND WSJCPP_INCLUDE_DIRS "src/handlers")
+
+# handlers
+list (APPEND WSJCPP_SOURCES "./src/handlers/request_handler.cpp")
 
 # database
 list (APPEND WSJCPP_SOURCES "./src/database/database_file.cpp")

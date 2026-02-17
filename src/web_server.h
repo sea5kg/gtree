@@ -26,12 +26,23 @@
 #pragma once
 
 #include "gt_errors.h"
+#include "request_handler.h"
+
 
 #include <string>
 #include <json.hpp>
+#include <memory>
 #include "HttpService.h"
 #include <employ_config.h>
 #include <employ_users.h>
+
+class GTreeRequestResponse : public gtree::HandleContext {
+public:
+  GTreeRequestResponse(HttpResponse* resp);
+  virtual int response(int ret_http_code, const nlohmann::json &resp_json) override;
+private:
+  HttpResponse* m_resp;
+};
 
 class WebServer {
 public:
@@ -45,20 +56,14 @@ private:
   std::string jsonrpc20ErrorResponse(int code, const std::string &msg, const std::string &msg_id = "");
   int respError(HttpResponse* resp, int ret_code, const std::string &text);
   int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
-  int respError(HttpResponse* resp, int ret_code, const GTreeError &info, const std::string &msg_id);
-  int respError400(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
-  int respError401(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
-  int respError403(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
-  int respError404(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
 
-  int respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id);
-  int checkAuth(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int doLogin(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int doLogout(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int createUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int removeUser(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int resetUserPassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
-  int changePassword(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
+  int checkAuth(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
+  int doLogin(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
+  int doLogout(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
+  int createUser(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
+  int removeUser(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
+  int resetUserPassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
+  int changePassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
 
   std::string TAG;
   hv::HttpService *m_pHttpService;
@@ -66,4 +71,5 @@ private:
   EmployUsers *m_pUsers;
 
   std::string m_sHtmlFolder;
+  std::map<std::string, std::shared_ptr<gtree::RequestHandler>> m_handlers;
 };

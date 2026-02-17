@@ -25,114 +25,116 @@
 
 #pragma once
 
-#include <string>
+#include "request_handler.h"
 
-// enum class GTError : unsigned int {
-//     ERR_10013_MISSING_FIELD_NEW_PASS = 10013,
-//     ERR_10014_MISSING_FIELD_OLD_PASS = 10014,
-// };
-
-struct GTreeError {
-  GTreeError(
-    int code,
-    const std::string &msg,
-    const std::string &msg_ru,
-    const std::string &empty
-  ) : code(code), msg(msg), msg_ru(msg_ru), empty(empty) {};
-  const int code;
-  const std::string msg;
-  const std::string msg_ru;
-  const std::string empty;
-};
-
-static const GTreeError ERR_01001_ONLY_POST_REQUESTS(
+static const gtree::ResponseError ERR_01001_ONLY_POST_REQUESTS(
     1001,
     "Only 'POST' requests will be handled.",
     "Обрабатываться будут только запросы типа 'POST'.",
     ""
 );
 
-static const GTreeError ERR_01002_INVALID_INCOMING_JSON(
+static const gtree::ResponseError ERR_01002_INVALID_INCOMING_JSON(
     1002,
     "Invalid incoming json",
     "Недопустимый входящий JSON.",
     ""
 );
 
-static const GTreeError ERR_01003_EXPECTED_JSON_INPUT(
+static const gtree::ResponseError ERR_01003_EXPECTED_JSON_INPUT(
     1003,
     "Expected json object input.",
     "Ожидаемый ввод: объект JSON.",
     ""
 );
 
-static const GTreeError ERR_01004_MISSING_FIELD_JSONRPC(
+static const gtree::ResponseError ERR_01004_MISSING_FIELD_JSONRPC(
     1004,
     "Missing field 'jsonrpc'",
     "Отсутствует поле 'jsonrpc'.",
     ""
 );
 
-static const GTreeError ERR_01005_MISSING_FIELD_METHOD(
+static const gtree::ResponseError ERR_01005_MISSING_FIELD_METHOD(
     1005,
     "Missing field 'method'",
     "Отсутствует поле 'method'.",
     ""
 );
 
-static const GTreeError ERR_01006_UNKNOWN_METHOD(
+static const gtree::ResponseError ERR_01006_UNKNOWN_METHOD(
     1006,
     "Unknown method.",
     "Неизвестный метод.",
     ""
 );
 
-static const GTreeError ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS(
+static const gtree::ResponseError ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS(
     1007,
     "Missing or unexpected type for field 'params'.",
     "Отсутствует или указан неожиданный тип для поля 'params'.",
     ""
 );
 
-static const GTreeError ERR_01008_YOU_ALREADY_AUTHORIZED(
+static const gtree::ResponseError ERR_01008_YOU_ALREADY_AUTHORIZED(
     1008,
     "You already authorized.",
     "Вы уже авторизованы..",
     ""
 );
 
-static const GTreeError ERR_01009_NOT_AUTHORIZED(
+static const gtree::ResponseError ERR_01009_NOT_AUTHORIZED(
     1009,
     "You not authorized.",
     "Вы не авторизованы.",
     ""
 );
 
-static const GTreeError ERR_01010_ALLOWED_ONLY_FOR_ADMIN(
+static const gtree::ResponseError ERR_01010_ALLOWED_ONLY_FOR_ADMIN(
     1010,
     "Allowed only for admin.",
     "Доступно только для администраторов.",
     ""
 );
 
-static const GTreeError ERR_10006_COULD_NOT_DID_LOGOUT(
-    10006,
+static const gtree::ResponseError ERR_10011_COULD_NOT_DID_LOGOUT(
+    10011,
     "Could not did logout.",
     "Не удалось выйти из системы.",
     ""
 );
 
+static const gtree::ResponseError ERR_10012_MISSING_FIELD_EMAIL(
+    10012,
+    "Missing field 'email' or wrong type.",
+    "Отсутствует поле 'email' или указан неверный тип.",
+    ""
+);
 
-static const GTreeError ERR_10013_MISSING_FIELD_NEW_PASS(
+static const gtree::ResponseError ERR_10013_MISSING_FIELD_NEW_PASS(
     10013,
     "Missing field 'new_pass' or wrong type.",
     "Отсутствует поле 'new_pass' или указан неверный тип.",
     ""
 );
 
-static const GTreeError ERR_10014_MISSING_FIELD_OLD_PASS(
+static const gtree::ResponseError ERR_10014_MISSING_FIELD_OLD_PASS(
     10014,
     "Missing field 'old_pass' or wrong type.",
     "Отсутствует поле 'old_pass' или имеет неправильный тип.",
+    ""
+);
+
+static const gtree::ResponseError ERR_10021_COULD_NOT_LOGIN(
+    10021,
+    "Could not login. Wrong email or password field.",
+    "Не удалось войти в систему. Неверный адрес электронной почты или пароль.",
+    ""
+);
+
+static const gtree::ResponseError ERR_10022_MISSING_FIELD_PASS(
+    10022,
+    "Missing field 'pass' or wrong type.",
+    "Отсутствует поле 'pass' или имеет неправильный тип.",
     ""
 );
