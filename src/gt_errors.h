@@ -45,10 +45,59 @@ struct GTreeError {
   const std::string empty;
 };
 
+static const GTreeError ERR_01001_ONLY_POST_REQUESTS(
+    1001,
+    "Only 'POST' requests will be handled.",
+    "Обрабатываться будут только запросы типа 'POST'.",
+    ""
+);
+
+static const GTreeError ERR_01002_INVALID_INCOMING_JSON(
+    1002,
+    "Invalid incoming json",
+    "Недопустимый входящий JSON.",
+    ""
+);
+
+static const GTreeError ERR_01003_EXPECTED_JSON_INPUT(
+    1003,
+    "Expected json object input.",
+    "Ожидаемый ввод: объект JSON.",
+    ""
+);
+
+static const GTreeError ERR_01004_MISSING_FIELD_JSONRPC(
+    1004,
+    "Missing field 'jsonrpc'",
+    "Отсутствует поле 'jsonrpc'.",
+    ""
+);
+
+static const GTreeError ERR_01005_MISSING_FIELD_METHOD(
+    1005,
+    "Missing field 'method'",
+    "Отсутствует поле 'method'.",
+    ""
+);
+
+static const GTreeError ERR_01006_UNKNOWN_METHOD(
+    1006,
+    "Unknown method.",
+    "Неизвестный метод.",
+    ""
+);
+
 static const GTreeError ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS(
     1007,
     "Missing or unexpected type for field 'params'.",
     "Отсутствует или указан неожиданный тип для поля 'params'.",
+    ""
+);
+
+static const GTreeError ERR_01008_YOU_ALREADY_AUTHORIZED(
+    1008,
+    "You already authorized.",
+    "Вы уже авторизованы..",
     ""
 );
 
@@ -58,6 +107,21 @@ static const GTreeError ERR_01009_NOT_AUTHORIZED(
     "Вы не авторизованы.",
     ""
 );
+
+static const GTreeError ERR_01010_ALLOWED_ONLY_FOR_ADMIN(
+    1010,
+    "Allowed only for admin.",
+    "Доступно только для администраторов.",
+    ""
+);
+
+static const GTreeError ERR_10006_COULD_NOT_DID_LOGOUT(
+    10006,
+    "Could not did logout.",
+    "Не удалось выйти из системы.",
+    ""
+);
+
 
 static const GTreeError ERR_10013_MISSING_FIELD_NEW_PASS(
     10013,

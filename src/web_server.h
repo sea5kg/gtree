@@ -48,6 +48,8 @@ private:
   int respError(HttpResponse* resp, int ret_code, const GTreeError &info, const std::string &msg_id);
   int respError400(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
   int respError401(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
+  int respError403(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
+  int respError404(HttpResponse* resp, const GTreeError &info, const std::string &msg_id);
 
   int respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id);
   int checkAuth(const nlohmann::json &req, const std::string &msg_id, const std::string &auth, HttpResponse* resp);
@@ -64,13 +66,4 @@ private:
   EmployUsers *m_pUsers;
 
   std::string m_sHtmlFolder;
-
-  std::string m_respErrInvalidIncomingJson;
-  std::string m_respErrApiOnlyPost;
-  std::string m_respErrExpectedJsonObjectInput;
-  std::string m_respErrMissingJsonRPCField;
-  std::string m_respErrMissingMethodField;
-  std::string m_respErrUnknownMethod;
-  std::string m_respErrAlreadyAuthorized;
-  std::string m_respErrAllowedOnlyAdmin;
 };

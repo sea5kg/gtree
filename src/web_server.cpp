@@ -62,15 +62,6 @@ WebServer::WebServer() {
 
   m_pHttpService->GET("*", std::bind(&WebServer::httpGetRequests, this, std::placeholders::_1, std::placeholders::_2));
   m_pHttpService->POST("*", std::bind(&WebServer::httpPostRequests, this, std::placeholders::_1, std::placeholders::_2));
-
-  m_respErrApiOnlyPost = jsonrpc20ErrorResponse(1001, "Only post requests will be handled");
-  m_respErrInvalidIncomingJson = jsonrpc20ErrorResponse(1002, "Invalid incoming json");
-  m_respErrExpectedJsonObjectInput = jsonrpc20ErrorResponse(1003, "Expected json object input");
-  m_respErrMissingJsonRPCField = jsonrpc20ErrorResponse(1004, "Missing field 'jsonrpc'");
-  m_respErrMissingMethodField = jsonrpc20ErrorResponse(1005, "Missing field 'method'");
-  m_respErrUnknownMethod = jsonrpc20ErrorResponse(1006, "Unknown method");
-  m_respErrAlreadyAuthorized = jsonrpc20ErrorResponse(1008, "You already authorized");
-  m_respErrAllowedOnlyAdmin = jsonrpc20ErrorResponse(1010, "Allowed only for admin");
 }
 
 hv::HttpService *WebServer::getService() {
@@ -117,7 +108,7 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   // WsjcppLog::info(TAG, "auth = " + auth);
 
   if (req->method != HTTP_POST) {
-    return respError(resp, 403, m_respErrApiOnlyPost);
+    return respError403(resp, ERR_01001_ONLY_POST_REQUESTS, "");
   }
 
   nlohmann::json req_json_body;
@@ -125,20 +116,20 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     req_json_body = nlohmann::json::parse(req->body);
   } catch (nlohmann::json::parse_error& error) {
     // std::cerr << "Parse error at byte: " << error.byte << std::endl;
-    return respError(resp, 400, m_respErrInvalidIncomingJson);
+    return respError400(resp, ERR_01002_INVALID_INCOMING_JSON, "");
   }
 
   if (!req_json_body.is_object()) {
-    return respError(resp, 400, m_respErrExpectedJsonObjectInput);
+    return respError400(resp, ERR_01003_EXPECTED_JSON_INPUT, "");
   }
 
   if (!req_json_body["jsonrpc"].is_string()) {
-    return respError(resp, 400, m_respErrMissingJsonRPCField);
+    return respError400(resp, ERR_01004_MISSING_FIELD_JSONRPC, "");
   }
 
   if (!req_json_body["method"].is_string()) {
     // std::cerr << "Not found field method " << std::endl;
-    return respError(resp, 400, m_respErrMissingMethodField);
+    return respError400(resp, ERR_01005_MISSING_FIELD_METHOD, "");
   }
 
   std::string method = req_json_body["method"];
@@ -163,7 +154,7 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     return changePassword(req_json_body, msg_id, auth, resp);
   }
 
-  return respError(resp, 404, m_respErrUnknownMethod);
+  return respError404(resp, ERR_01006_UNKNOWN_METHOD, msg_id);
 }
 
 std::string WebServer::normalizeRequestPath(HttpRequest* req) {
@@ -253,6 +244,16 @@ int WebServer::respError401(HttpResponse* resp, const GTreeError &info, const st
   return respError(resp, ret_code, info, msg_id);
 }
 
+int WebServer::respError403(HttpResponse* resp, const GTreeError &info, const std::string &msg_id) {
+  const int ret_code = 403;
+  return respError(resp, ret_code, info, msg_id);
+}
+
+int WebServer::respError404(HttpResponse* resp, const GTreeError &info, const std::string &msg_id) {
+  const int ret_code = 404;
+  return respError(resp, ret_code, info, msg_id);
+}
+
 int WebServer::respResult(HttpResponse* resp, const nlohmann::json &result, const std::string &msg_id) {
   nlohmann::json resp_json;
   resp_json["jsonrpc"] = "2.0";
@@ -286,7 +287,7 @@ int WebServer::doLogin(const nlohmann::json &req, const std::string &msg_id, con
   // auth
   UserSession req_session = m_pUsers->findSession(auth);
   if (req_session.uuid != "") {
-    return respError(resp, 401, m_respErrAlreadyAuthorized);
+    return respError401(resp, ERR_01008_YOU_ALREADY_AUTHORIZED, msg_id);
   }
 
   if (!req["params"].is_object()) {
@@ -325,7 +326,7 @@ int WebServer::doLogout(const nlohmann::json &req, const std::string &msg_id, co
   }
 
   if (!m_pUsers->doLogout(req_session.uuid)) {
-    return respError(resp, 401, 10006, "Could not doLogout", msg_id);
+    return respError401(resp, ERR_10006_COULD_NOT_DID_LOGOUT, msg_id);
   }
 
   nlohmann::json result;
@@ -341,7 +342,7 @@ int WebServer::createUser(const nlohmann::json &req, const std::string &msg_id, 
   }
 
   if (req_session.user.role != "admin") {
-    return respError(resp, 403, m_respErrAllowedOnlyAdmin);
+    return respError403(resp, ERR_01010_ALLOWED_ONLY_FOR_ADMIN, msg_id);
   }
 
   if (!req["params"].is_object()) {
@@ -384,7 +385,7 @@ int WebServer::removeUser(const nlohmann::json &req, const std::string &msg_id, 
   }
 
   if (req_session.user.role != "admin") {
-    return respError(resp, 403, m_respErrAllowedOnlyAdmin);
+    return respError403(resp, ERR_01010_ALLOWED_ONLY_FOR_ADMIN, msg_id);
   }
 
   if (!req["params"].is_object()) {
