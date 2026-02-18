@@ -71,12 +71,12 @@ resp = requests.post("http://localhost:10555/api/", headers={
 print(resp.status_code)
 print(resp.json())
 
-print("changeUserPassword")
+print("resetUserPassword")
 resp = requests.post("http://localhost:10555/api/", headers={
     "Authorization": session_admin,
 }, json={
     "jsonrpc": "2.0",
-    "method": "changeUserPassword",
+    "method": "resetUserPassword",
     "id": str(uuid.uuid4()),
     "params": {
         "email": "test_user",

@@ -61,7 +61,7 @@ private:
   int doLogin(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int doLogout(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int createUser(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
-  int removeUser(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
+  int removeUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int resetUserPassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
   int changePassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
 

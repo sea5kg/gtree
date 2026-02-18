@@ -25,121 +25,195 @@
 
 #pragma once
 
-#include "request_handler.h"
+#include <string>
 
-static const gtree::ResponseError ERR_01001_ONLY_POST_REQUESTS(
+namespace gtree {
+
+class ErrorInfo {
+public:
+  ErrorInfo(
+    int code,
+    const std::string &msg,
+    const std::string &msg_ru,
+    const std::string &empty
+  ) : code(code), msg(msg), msg_ru(msg_ru), empty(empty) {};
+  ErrorInfo replace(std::string var_name, std::string var_value) const {
+    if (var_name.empty()) {
+        return ErrorInfo(code, msg, msg_ru, empty);
+    }
+
+    std::string copy_msg = msg;
+    size_t start_pos = 0;
+    while ((start_pos = copy_msg.find(var_name, start_pos)) != std::string::npos) {
+        copy_msg.replace(start_pos, var_name.length(), var_value);
+        start_pos += var_value.length(); // In case 'to' contains 'sFrom', like replacing 'x' with 'yx'
+    }
+
+    std::string copy_msg_ru = msg_ru;
+    start_pos = 0;
+    while ((start_pos = copy_msg_ru.find(var_name, start_pos)) != std::string::npos) {
+        copy_msg_ru.replace(start_pos, var_name.length(), var_value);
+        start_pos += var_value.length(); // In case 'to' contains 'sFrom', like replacing 'x' with 'yx'
+    }
+    return ErrorInfo(code, copy_msg, copy_msg_ru, empty);
+  };
+  const int code;
+  const std::string msg;
+  const std::string msg_ru;
+  const std::string empty;
+};
+
+} // namespace gtree
+
+static const gtree::ErrorInfo ERR_01001_ONLY_POST_REQUESTS(
     1001,
     "Only 'POST' requests will be handled.",
     "Обрабатываться будут только запросы типа 'POST'.",
     ""
 );
 
-static const gtree::ResponseError ERR_01002_INVALID_INCOMING_JSON(
+static const gtree::ErrorInfo ERR_01002_INVALID_INCOMING_JSON(
     1002,
     "Invalid incoming json",
     "Недопустимый входящий JSON.",
     ""
 );
 
-static const gtree::ResponseError ERR_01003_EXPECTED_JSON_INPUT(
+static const gtree::ErrorInfo ERR_01003_EXPECTED_JSON_INPUT(
     1003,
     "Expected json object input.",
     "Ожидаемый ввод: объект JSON.",
     ""
 );
 
-static const gtree::ResponseError ERR_01004_MISSING_FIELD_JSONRPC(
+static const gtree::ErrorInfo ERR_01004_MISSING_FIELD_JSONRPC(
     1004,
     "Missing field 'jsonrpc'",
     "Отсутствует поле 'jsonrpc'.",
     ""
 );
 
-static const gtree::ResponseError ERR_01005_MISSING_FIELD_METHOD(
+static const gtree::ErrorInfo ERR_01005_MISSING_FIELD_METHOD(
     1005,
     "Missing field 'method'",
     "Отсутствует поле 'method'.",
     ""
 );
 
-static const gtree::ResponseError ERR_01006_UNKNOWN_METHOD(
+static const gtree::ErrorInfo ERR_01006_UNKNOWN_METHOD(
     1006,
     "Unknown method.",
     "Неизвестный метод.",
     ""
 );
 
-static const gtree::ResponseError ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS(
+static const gtree::ErrorInfo ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS(
     1007,
     "Missing or unexpected type for field 'params'.",
     "Отсутствует или указан неожиданный тип для поля 'params'.",
     ""
 );
 
-static const gtree::ResponseError ERR_01008_YOU_ALREADY_AUTHORIZED(
+static const gtree::ErrorInfo ERR_01008_YOU_ALREADY_AUTHORIZED(
     1008,
     "You already authorized.",
     "Вы уже авторизованы..",
     ""
 );
 
-static const gtree::ResponseError ERR_01009_NOT_AUTHORIZED(
+static const gtree::ErrorInfo ERR_01009_NOT_AUTHORIZED(
     1009,
     "You not authorized.",
     "Вы не авторизованы.",
     ""
 );
 
-static const gtree::ResponseError ERR_01010_ALLOWED_ONLY_FOR_ADMIN(
+static const gtree::ErrorInfo ERR_01010_ALLOWED_ONLY_FOR_ADMIN(
     1010,
     "Allowed only for admin.",
     "Доступно только для администраторов.",
     ""
 );
 
-static const gtree::ResponseError ERR_10011_COULD_NOT_DID_LOGOUT(
+
+// static const gtree::ErrorInfo ERR_02001_ALLOWED_ONLY_FOR_ADMIN(
+//     2001,
+//     "Allowed only for admin.",
+//     "Доступно только для администраторов.",
+//     ""
+// );
+
+static const gtree::ErrorInfo ERR_10004_MISSING_FIELD_EMAIL(
+    10004,
+    "Missing field 'email' or wrong type.",
+    "Отсутствует поле 'email' или указан неверный тип..",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10008_YOU_CAN_NOT_DELETE_YOURSELF(
+    10008,
+    "You can not delete yourself.",
+    "Вы не можете удалить себя.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10009_USER_NOT_FOUND_WITH_EMAIL(
+    10009,
+    "User not found with email '$email$'.",
+    "Пользователь с адресом электронной почты '$email$' не найден.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10010_COULD_NOT_REMOVE_USER_WITH_EMAIL(
+    10010,
+    "Could not remove user '$email$'.",
+    "Не удалось удалить пользователя '$email$'.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10011_COULD_NOT_DID_LOGOUT(
     10011,
     "Could not did logout.",
     "Не удалось выйти из системы.",
     ""
 );
 
-static const gtree::ResponseError ERR_10012_MISSING_FIELD_EMAIL(
+static const gtree::ErrorInfo ERR_10012_MISSING_FIELD_EMAIL(
     10012,
     "Missing field 'email' or wrong type.",
     "Отсутствует поле 'email' или указан неверный тип.",
     ""
 );
 
-static const gtree::ResponseError ERR_10013_MISSING_FIELD_NEW_PASS(
+static const gtree::ErrorInfo ERR_10013_MISSING_FIELD_NEW_PASS(
     10013,
     "Missing field 'new_pass' or wrong type.",
     "Отсутствует поле 'new_pass' или указан неверный тип.",
     ""
 );
 
-static const gtree::ResponseError ERR_10014_MISSING_FIELD_OLD_PASS(
+static const gtree::ErrorInfo ERR_10014_MISSING_FIELD_OLD_PASS(
     10014,
     "Missing field 'old_pass' or wrong type.",
     "Отсутствует поле 'old_pass' или имеет неправильный тип.",
     ""
 );
 
-static const gtree::ResponseError ERR_10021_COULD_NOT_LOGIN(
+static const gtree::ErrorInfo ERR_10021_COULD_NOT_LOGIN(
     10021,
     "Could not login. Wrong email or password field.",
     "Не удалось войти в систему. Неверный адрес электронной почты или пароль.",
     ""
 );
 
-static const gtree::ResponseError ERR_10022_MISSING_FIELD_PASS(
+static const gtree::ErrorInfo ERR_10022_MISSING_FIELD_PASS(
     10022,
     "Missing field 'pass' or wrong type.",
     "Отсутствует поле 'pass' или имеет неправильный тип.",
     ""
 );
 
-static const gtree::ResponseError ERR_10023_ONLY_ADMIN_CAN_RESET_PASSWORD(
+static const gtree::ErrorInfo ERR_10023_ONLY_ADMIN_CAN_RESET_PASSWORD(
     10023,
     "Only admin can reset password.",
     "Только администратор может сбросить пароль.",

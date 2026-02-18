@@ -24,6 +24,7 @@
 // https://github.com/sea5kg/gtree
 
 #include "employ_users.h"
+#include "gt_errors.h"
 
 #include <algorithm>
 #include "employ_database.h"
@@ -168,17 +169,21 @@ bool EmployUsers::createUser(const std::string &email, const std::string &pass, 
   return true;
 }
 
-bool EmployUsers::removeUser(const std::string &email, std::string &error) {
+bool EmployUsers::removeUser(const std::string &email, std::shared_ptr<gtree::ErrorInfo> &error) {
   auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
 
   std::string user_uuid = dbUsers->findUserUuid(email);
   if (user_uuid == "") {
-    error = "User not found with email '" + email + "'";
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10009_USER_NOT_FOUND_WITH_EMAIL.replace("$email$", email)
+    ));
     return false;
   }
 
   if (!dbUsers->removeUser(user_uuid)) {
-    error = "Could not create user '" + email + "'";
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10010_COULD_NOT_REMOVE_USER_WITH_EMAIL.replace("$email$", email)
+    ));
     return false;
   }
 

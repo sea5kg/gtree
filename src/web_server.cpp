@@ -165,7 +165,7 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   } else if (method == "createUser") {
     return createUser(req_json_body, resp, context);
   } else if (method == "removeUser") {
-    return removeUser(req_json_body, resp, context);
+    return removeUser(req_json_body, context);
   } else if (method == "resetUserPassword") {
     return resetUserPassword(req_json_body, resp, context);
   } else if (method == "changePassword") {
@@ -334,7 +334,7 @@ int WebServer::createUser(const nlohmann::json &req, HttpResponse* resp, std::sh
   return context->success(result);
 }
 
-int WebServer::removeUser(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::removeUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -346,23 +346,22 @@ int WebServer::removeUser(const nlohmann::json &req, HttpResponse* resp, std::sh
   }
 
   if (!req["params"].is_object()) {
-    // std::cerr << "Not found field method " << std::endl;
     return context->error400(ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS);
   }
 
   if (!req["params"]["email"].is_string()) {
-    return respError(resp, 400, 10004, "Missing field 'email' or wrong type", context->getMessageId());
+    return context->error400(ERR_10004_MISSING_FIELD_EMAIL);
   }
 
   std::string email = req["params"]["email"];
 
   if (req_session.user.email == email) {
-    return respError(resp, 403, 10008, "You can not delete yourself", context->getMessageId());
+    return context->error403(ERR_10008_YOU_CAN_NOT_DELETE_YOURSELF);
   }
 
-  std::string error;
+  std::shared_ptr<gtree::ErrorInfo> error;
   if (!m_pUsers->removeUser(email, error)) {
-    return context->error403(gtree::ResponseError(10009, error, "", ""));
+    return context->error403(std::move(error));
   }
 
   // TODO remove from uuids

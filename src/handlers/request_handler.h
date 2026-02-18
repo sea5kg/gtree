@@ -25,23 +25,11 @@
 
 #pragma once
 
+#include "gt_errors.h"
 #include <string>
 #include <json.hpp>
 
 namespace gtree {
-
-struct ResponseError {
-  ResponseError(
-    int code,
-    const std::string &msg,
-    const std::string &msg_ru,
-    const std::string &empty
-  ) : code(code), msg(msg), msg_ru(msg_ru), empty(empty) {};
-  const int code;
-  const std::string msg;
-  const std::string msg_ru;
-  const std::string empty;
-};
 
 class HandleContext {
 public:
@@ -56,11 +44,15 @@ public:
 
   // other method
   int success(const nlohmann::json &result);
-  int failed(int ret_http_code, const ResponseError &error);
-  int error400(const ResponseError &error);
-  int error401(const ResponseError &error);
-  int error403(const ResponseError &error);
-  int error404(const ResponseError &error);
+  int failed(int ret_http_code, const ErrorInfo &error);
+  int error400(const ErrorInfo &error);
+  int error400(std::shared_ptr<gtree::ErrorInfo> error);
+  int error401(const ErrorInfo &error);
+  int error401(std::shared_ptr<gtree::ErrorInfo> error);
+  int error403(const ErrorInfo &error);
+  int error403(std::shared_ptr<gtree::ErrorInfo> error);
+  int error404(const ErrorInfo &error);
+  int error404(std::shared_ptr<gtree::ErrorInfo> error);
 
 private:
   nlohmann::json prepareResponseJson();

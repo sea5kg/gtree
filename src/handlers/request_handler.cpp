@@ -25,6 +25,8 @@
 
 #include "request_handler.h"
 
+#include <iostream>
+
 namespace gtree {
 
 // HandleContext
@@ -51,7 +53,8 @@ int HandleContext::success(const nlohmann::json &result) {
   return response(200, resp_json);
 }
 
-int HandleContext::failed(int ret_http_code, const ResponseError &error) {
+int HandleContext::failed(int ret_http_code, const ErrorInfo &error) {
+  // std::cout << "HandleContext::failed (1). error->code: " << error.code << std::endl;
   nlohmann::json resp_json = prepareResponseJson();
   // resp_json["error"] = nlohmann::json();
   resp_json["error"]["code"] = error.code;
@@ -71,20 +74,37 @@ int HandleContext::failed(int ret_http_code, const ResponseError &error) {
   return response(ret_http_code, resp_json);
 }
 
-int HandleContext::error400(const ResponseError &error) {
+int HandleContext::error400(const ErrorInfo &error) {
   return failed(400, error);
 }
 
-int HandleContext::error401(const ResponseError &error) {
+int HandleContext::error400(std::shared_ptr<gtree::ErrorInfo> error) {
+  return failed(400, *(error.get()));
+}
+
+int HandleContext::error401(const ErrorInfo &error) {
   return failed(401, error);
 }
 
-int HandleContext::error403(const ResponseError &error) {
+int HandleContext::error401(std::shared_ptr<gtree::ErrorInfo> error) {
+  return failed(401, *(error.get()));
+}
+
+int HandleContext::error403(const ErrorInfo &error) {
   return failed(403, error);
 }
 
-int HandleContext::error404(const ResponseError &error) {
+int HandleContext::error403(std::shared_ptr<gtree::ErrorInfo> error) {
+  // return failed(403, std::move(error));
+  return failed(403, *(error.get()));
+}
+
+int HandleContext::error404(const ErrorInfo &error) {
   return failed(404, error);
+}
+
+int HandleContext::error404(std::shared_ptr<gtree::ErrorInfo> error) {
+  return failed(404, *(error.get()));
 }
 
 nlohmann::json HandleContext::prepareResponseJson() {
