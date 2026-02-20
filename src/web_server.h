@@ -53,17 +53,14 @@ public:
 
 private:
   std::string normalizeRequestPath(HttpRequest* req);
-  std::string jsonrpc20ErrorResponse(int code, const std::string &msg, const std::string &msg_id = "");
-  int respError(HttpResponse* resp, int ret_code, const std::string &text);
-  int respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id);
 
   int checkAuth(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int doLogin(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int doLogout(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int createUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
   int removeUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int resetUserPassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
-  int changePassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context);
+  int resetUserPassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
+  int changePassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
 
   std::string TAG;
   hv::HttpService *m_pHttpService;

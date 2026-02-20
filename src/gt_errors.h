@@ -234,6 +234,13 @@ static const gtree::ErrorInfo ERR_10019_COULD_NOT_CREATE_USER(
     ""
 );
 
+static const gtree::ErrorInfo ERR_10020_MISSING_FIELD_EMAIL(
+    10020,
+    "Missing field 'email' or wrong type",
+    "Отсутствует поле 'email' или имеет неправильный тип.",
+    ""
+);
+
 static const gtree::ErrorInfo ERR_10021_COULD_NOT_LOGIN(
     10021,
     "Could not login. Wrong email or password field.",
@@ -252,5 +259,47 @@ static const gtree::ErrorInfo ERR_10023_ONLY_ADMIN_CAN_RESET_PASSWORD(
     10023,
     "Only admin can reset password.",
     "Только администратор может сбросить пароль.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10024_MISSING_FIELD_PASS(
+    10024,
+    "Missing field 'pass' or wrong type",
+    "Отсутствует поле 'pass' или имеет неправильный тип.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10025_USER_NOT_FOUND_WITH_EMAIL(
+    10025,
+    "User not found with email '$email$'.",
+    "Пользователь с адресом электронной почты '$email$' не найден.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10026_COULD_NOT_UPDATE_PASSWORD_FOR(
+    10026,
+    "Could not update password for '$email$', error = '$error$'",
+    "Не удалось обновить пароль для '$email$', ошибка = '$error$'",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10027_USER_NOT_FOUND_WITH_EMAIL(
+    10027,
+    "User not found with email '$email$'.",
+    "Пользователь с адресом электронной почты '$email$' не найден.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10028_WRONG_PASSWORD(
+    10028,
+    "Wrong password.",
+    "Неверный пароль.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10029_COULD_NOT_UPDATE_PASSWORD_FOR(
+    10029,
+    "Could not update password for '$email$', error = '$error$'",
+    "Не удалось обновить пароль для '$email$', ошибка = '$error$'",
     ""
 );

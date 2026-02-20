@@ -194,39 +194,50 @@ bool EmployUsers::removeUser(const std::string &email, std::shared_ptr<gtree::Er
   return true;
 }
 
-bool EmployUsers::resetUserPassword(const std::string &email, const std::string &pass, std::string &error) {
+bool EmployUsers::resetUserPassword(const std::string &email, const std::string &pass, std::shared_ptr<gtree::ErrorInfo> &error) {
   auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
 
   std::string user_uuid = dbUsers->findUserUuid(email);
   if (user_uuid == "") {
-    error = "User not found with email '" + email + "'";
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10025_USER_NOT_FOUND_WITH_EMAIL.replace("$email$", email)
+    ));
     return false;
   }
-
-  if (!dbUsers->changeUserPassword(user_uuid, pass, error)) {
-    error = "Could not update password for '" + email + "', error = " + error;
+  std::string db_error;
+  if (!dbUsers->changeUserPassword(user_uuid, pass, db_error)) {
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10026_COULD_NOT_UPDATE_PASSWORD_FOR.replace("$email$", email).replace("$error$", db_error)
+    ));
     return false;
   }
 
   return true;
 }
 
-bool EmployUsers::changePassword(const std::string &email, const std::string &old_pass, const std::string &new_pass, std::string &error) {
+bool EmployUsers::changePassword(const std::string &email, const std::string &old_pass, const std::string &new_pass, std::shared_ptr<gtree::ErrorInfo> &error) {
   auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
 
   std::string user_uuid = dbUsers->findUserUuid(email);
   if (user_uuid == "") {
-    error = "User not found with email '" + email + "'";
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10027_USER_NOT_FOUND_WITH_EMAIL.replace("$email$", email)
+    ));
     return false;
   }
   std::pair<std::string, std::string> res = dbUsers->findUserByNameAndPass(email, old_pass);
   if (res.first == "") {
-    error = "Wrong password?";
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10028_WRONG_PASSWORD
+    ));
     return false;
   }
 
-  if (!dbUsers->changeUserPassword(user_uuid, new_pass, error)) {
-    error = "Could not update password for '" + email + "', error = " + error;
+  std::string db_error;
+  if (!dbUsers->changeUserPassword(user_uuid, new_pass, db_error)) {
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10029_COULD_NOT_UPDATE_PASSWORD_FOR.replace("$email$", email).replace("$error$", db_error)
+    ));
     return false;
   }
 

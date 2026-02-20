@@ -153,9 +153,9 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
   } else if (context->methodName() == "removeUser") {
     return removeUser(req_json_body, context);
   } else if (context->methodName() == "resetUserPassword") {
-    return resetUserPassword(req_json_body, resp, context);
+    return resetUserPassword(req_json_body, context);
   } else if (context->methodName() == "changePassword") {
-    return changePassword(req_json_body, resp, context);
+    return changePassword(req_json_body, context);
   }
 
   return context->error404(ERR_01006_UNKNOWN_METHOD);
@@ -173,44 +173,6 @@ std::string WebServer::normalizeRequestPath(HttpRequest* req) {
   }
   sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
   return sRequestPath;
-}
-
-std::string WebServer::jsonrpc20ErrorResponse(int code, const std::string &msg, const std::string &msg_id) {
-   // TODO data
-  nlohmann::json resp_json;
-  resp_json["jsonrpc"] = "2.0";
-  resp_json["error"] = nlohmann::json();
-  resp_json["error"]["code"] = code;
-  resp_json["error"]["message"] = msg;
-  if (msg_id != "") {
-    resp_json["id"] = msg_id;
-  }
-   // "error":{
-   //    "code": 10,
-   //    "message": "Unauthorized action",
-   //    "data":[
-   //       {
-   //          "code": 2,
-   //          "message":"Denied privileged API access for uid=XXX gid=XXX"
-   //       }
-   //    ]
-   // "id":"5e273ec0-3e3b-4a81-90ec-aeee3d38073f"
-  return resp_json.dump();
-}
-
-int WebServer::respError(HttpResponse* resp, int ret_code, const std::string &text) {
-  resp->Data(
-    (void *)(text.c_str()),
-    text.length(),
-    false, // nocopy - force copy
-    APPLICATION_JSON
-  );
-  return ret_code;
-}
-
-int WebServer::respError(HttpResponse* resp, int ret_code, int code_error, const std::string &msg, const std::string &msg_id) {
-  std::string text = jsonrpc20ErrorResponse(code_error, msg, msg_id);
-  return respError(resp, ret_code, text);
 }
 
 int WebServer::checkAuth(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
@@ -356,7 +318,7 @@ int WebServer::removeUser(const nlohmann::json &req, std::shared_ptr<gtree::Hand
   return context->success(result);
 }
 
-int WebServer::resetUserPassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::resetUserPassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -373,19 +335,19 @@ int WebServer::resetUserPassword(const nlohmann::json &req, HttpResponse* resp, 
   }
 
   if (!req["params"]["email"].is_string()) {
-    return respError(resp, 400, 10004, "Missing field 'email' or wrong type", context->getMessageId());
+    return context->error400(ERR_10020_MISSING_FIELD_EMAIL);
   }
 
   if (!req["params"]["pass"].is_string()) {
-    return respError(resp, 400, 10004, "Missing field 'pass' or wrong type", context->getMessageId());
+    return context->error400(ERR_10024_MISSING_FIELD_PASS);
   }
 
   std::string email = req["params"]["email"];
   std::string pass = req["params"]["pass"];
 
-  std::string error;
+  std::shared_ptr<gtree::ErrorInfo> error;
   if (!m_pUsers->resetUserPassword(email, pass, error)) {
-    return respError(resp, 401, 10011, error, context->getMessageId());
+    return context->error403(error);
   }
 
   nlohmann::json result;
@@ -393,7 +355,7 @@ int WebServer::resetUserPassword(const nlohmann::json &req, HttpResponse* resp, 
   return context->success(result);
 }
 
-int WebServer::changePassword(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::changePassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -416,9 +378,9 @@ int WebServer::changePassword(const nlohmann::json &req, HttpResponse* resp, std
   std::string old_pass = req["params"]["old_pass"];
   std::string new_pass = req["params"]["new_pass"];
 
-  std::string error;
+  std::shared_ptr<gtree::ErrorInfo> error;
   if (!m_pUsers->changePassword(email, old_pass, new_pass, error)) {
-    return respError(resp, 401, 10011, error, context->getMessageId());
+    return context->error403(error);
   }
 
   nlohmann::json result;
