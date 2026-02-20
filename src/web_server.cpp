@@ -129,6 +129,11 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     return context->error403(ERR_01001_ONLY_POST_REQUESTS);
   }
 
+  std::shared_ptr<gtree::ErrorInfo> error;
+  if (!context->parseBodyAndCheck(req->body, error)) {
+    return context->error400(error);
+  }
+
   nlohmann::json req_json_body;
   try {
     req_json_body = nlohmann::json::parse(req->body);
@@ -137,38 +142,19 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     return context->error400(ERR_01002_INVALID_INCOMING_JSON);
   }
 
-  if (!req_json_body.is_object()) {
-    return context->error400(ERR_01003_EXPECTED_JSON_INPUT);
-  }
-
-  if (!req_json_body["jsonrpc"].is_string()) {
-    return context->error400(ERR_01004_MISSING_FIELD_JSONRPC);
-  }
-
-  if (!req_json_body["method"].is_string()) {
-    // std::cerr << "Not found field method " << std::endl;
-    return context->error400(ERR_01005_MISSING_FIELD_METHOD);
-  }
-
-  std::string method = req_json_body["method"];
-  std::string msg_id = "";
-  if (req_json_body["id"].is_string()) {
-    msg_id = req_json_body["id"];
-  }
-
-  if (method == "checkAuth") {
+  if (context->methodName() == "checkAuth") {
     return checkAuth(req_json_body, context);
-  } else if (method == "doLogin") {
+  } else if (context->methodName() == "doLogin") {
     return doLogin(req_json_body, context);
-  } else if (method == "doLogout") {
+  } else if (context->methodName() == "doLogout") {
     return doLogout(req_json_body, context);
-  } else if (method == "createUser") {
-    return createUser(req_json_body, resp, context);
-  } else if (method == "removeUser") {
+  } else if (context->methodName() == "createUser") {
+    return createUser(req_json_body, context);
+  } else if (context->methodName() == "removeUser") {
     return removeUser(req_json_body, context);
-  } else if (method == "resetUserPassword") {
+  } else if (context->methodName() == "resetUserPassword") {
     return resetUserPassword(req_json_body, resp, context);
-  } else if (method == "changePassword") {
+  } else if (context->methodName() == "changePassword") {
     return changePassword(req_json_body, resp, context);
   }
 
@@ -291,7 +277,7 @@ int WebServer::doLogout(const nlohmann::json &req, std::shared_ptr<gtree::Handle
   return context->success(result);
 }
 
-int WebServer::createUser(const nlohmann::json &req, HttpResponse* resp, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::createUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -308,24 +294,22 @@ int WebServer::createUser(const nlohmann::json &req, HttpResponse* resp, std::sh
   }
 
   if (!req["params"]["email"].is_string()) {
-    return respError(resp, 400, 10004, "Missing field 'email' or wrong type", context->getMessageId());
+    return context->error400(ERR_10015_MISSING_FIELD_EMAIL);
   }
   if (!req["params"]["pass"].is_string()) {
-    return respError(resp, 400, 10005, "Missing field 'pass' or wrong type", context->getMessageId());
+    return context->error400(ERR_10016_MISSING_FIELD_PASS);
   }
   if (!req["params"]["role"].is_string()) {
-    return respError(resp, 400, 10006, "Missing field 'role' or wrong type", context->getMessageId());
+    return context->error400(ERR_10017_MISSING_FIELD_ROLE);
   }
 
   std::string email = req["params"]["email"];
   std::string pass = req["params"]["pass"];
   std::string role = req["params"]["role"];
 
-
-  std::string error;
-
+  std::shared_ptr<gtree::ErrorInfo> error;
   if (!m_pUsers->createUser(email, pass, role, error)) {
-    return respError(resp, 401, 10007, error, context->getMessageId());
+    return context->error403(error);
   }
 
   nlohmann::json result;

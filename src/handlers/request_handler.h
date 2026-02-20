@@ -37,10 +37,12 @@ public:
   virtual int response(int ret_http_code, const nlohmann::json &resp_json) = 0;
 
   // setters / getters
-  void setMessageId(const std::string &msg_id);
+  const std::string &methodName();
   const std::string &getMessageId();
   void setAuth(const std::string &auth);
   const std::string &getAuth();
+
+  bool parseBodyAndCheck(const std::string &body, std::shared_ptr<gtree::ErrorInfo> &error);
 
   // other method
   int success(const nlohmann::json &result);
@@ -58,6 +60,7 @@ private:
   nlohmann::json prepareResponseJson();
 
   std::string m_msg_id;
+  std::string m_method_name;
   std::string m_auth;
 };
 

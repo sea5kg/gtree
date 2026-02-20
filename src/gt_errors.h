@@ -199,6 +199,41 @@ static const gtree::ErrorInfo ERR_10014_MISSING_FIELD_OLD_PASS(
     ""
 );
 
+static const gtree::ErrorInfo ERR_10015_MISSING_FIELD_EMAIL(
+    10015,
+    "Missing field 'email' or wrong type.",
+    "Отсутствует поле 'email' или имеет неправильный тип.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10016_MISSING_FIELD_PASS(
+    10016,
+    "Missing field 'pass' or wrong type.",
+    "Отсутствует поле 'pass' или имеет неправильный тип.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10017_MISSING_FIELD_ROLE(
+    10017,
+    "Missing field 'role' or wrong type.",
+    "Отсутствует поле 'role' или имеет неправильный тип.",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10018_USER_ALREADY_EXISTS(
+    10018,
+    "User already exists '$email$' -> '$uuid$'",
+    "Пользователь уже существует '$email$' -> '$uuid$'",
+    ""
+);
+
+static const gtree::ErrorInfo ERR_10019_COULD_NOT_CREATE_USER(
+    10019,
+    "Could not create user '$email$'",
+    "Не удалось создать пользователя '$email$'",
+    ""
+);
+
 static const gtree::ErrorInfo ERR_10021_COULD_NOT_LOGIN(
     10021,
     "Could not login. Wrong email or password field.",

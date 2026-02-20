@@ -31,8 +31,8 @@ namespace gtree {
 
 // HandleContext
 
-void HandleContext::setMessageId(const std::string &msg_id) {
-  m_msg_id = msg_id;
+const std::string &HandleContext::methodName() {
+  return m_method_name;
 }
 
 const std::string &HandleContext::getMessageId() {
@@ -45,6 +45,47 @@ void HandleContext::setAuth(const std::string &auth) {
 
 const std::string &HandleContext::getAuth() {
   return m_auth;
+}
+
+bool HandleContext::parseBodyAndCheck(const std::string &body, std::shared_ptr<gtree::ErrorInfo> &error) {
+  nlohmann::json req_json_body;
+  try {
+    req_json_body = nlohmann::json::parse(body);
+  } catch (nlohmann::json::parse_error& err) {
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_01002_INVALID_INCOMING_JSON
+    ));
+    // std::cerr << "Parse error at byte: " << err.byte << std::endl;
+    return false;
+  }
+
+  if (!req_json_body.is_object()) {
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_01003_EXPECTED_JSON_INPUT
+    ));
+    return false;
+  }
+
+  if (!req_json_body["jsonrpc"].is_string()) {
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_01004_MISSING_FIELD_JSONRPC
+    ));
+    return false;
+  }
+
+  if (!req_json_body["method"].is_string()) {
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_01005_MISSING_FIELD_METHOD
+    ));
+    // std::cerr << "Not found field method " << std::endl;
+    return false;
+  }
+
+  m_method_name = req_json_body["method"];
+  if (req_json_body["id"].is_string()) {
+    m_msg_id = req_json_body["id"];
+  }
+  return true;
 }
 
 int HandleContext::success(const nlohmann::json &result) {

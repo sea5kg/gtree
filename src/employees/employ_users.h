@@ -53,7 +53,7 @@ public:
   UserSession doLogin(const std::string &name, const std::string &pass);
   bool doLogout(const std::string &uuid);
   UserSession findSession(const std::string &uuid);
-  bool createUser(const std::string &email, const std::string &pass, const std::string &role, std::string &error);
+  bool createUser(const std::string &email, const std::string &pass, const std::string &role, std::shared_ptr<gtree::ErrorInfo> &error);
   bool removeUser(const std::string &email, std::shared_ptr<gtree::ErrorInfo> &error);
   bool resetUserPassword(const std::string &email, const std::string &pass, std::string &error);
   bool changePassword(const std::string &email, const std::string &old_pass, const std::string &new_pass, std::string &error);

@@ -148,12 +148,14 @@ UserSession EmployUsers::findSession(const std::string &uuid) {
   return session;
 }
 
-bool EmployUsers::createUser(const std::string &email, const std::string &pass, const std::string &role, std::string &error) {
+bool EmployUsers::createUser(const std::string &email, const std::string &pass, const std::string &role, std::shared_ptr<gtree::ErrorInfo> &error) {
   auto dbUsers = findWsjcppEmploy<EmployDatabase>()->dbUsers();
 
   std::string uuid = dbUsers->findUserUuid(email);
   if (uuid != "") {
-    error = "User already exists " + email + " -> " + uuid;
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10018_USER_ALREADY_EXISTS.replace("$email$", email).replace("$uuid$", uuid)
+    ));
     return false;
   }
 
@@ -162,7 +164,9 @@ bool EmployUsers::createUser(const std::string &email, const std::string &pass, 
   std::string user_uuid = pUuids->generateNewUuid("user");
 
   if (!dbUsers->createUser(user_uuid, email, role, pass)) {
-    error = "Could not create user '" + email + "'";
+    error = std::move(std::make_shared<gtree::ErrorInfo>(
+      ERR_10019_COULD_NOT_CREATE_USER.replace("$email$", email)
+    ));
     return false;
   }
 
