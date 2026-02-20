@@ -54,13 +54,13 @@ public:
 private:
   std::string normalizeRequestPath(HttpRequest* req);
 
-  int checkAuth(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int doLogin(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int doLogout(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int createUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int removeUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int resetUserPassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
-  int changePassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context);
+  int checkAuth(std::shared_ptr<gtree::HandleContext> context);
+  int doLogin(std::shared_ptr<gtree::HandleContext> context);
+  int doLogout(std::shared_ptr<gtree::HandleContext> context);
+  int createUser(std::shared_ptr<gtree::HandleContext> context);
+  int removeUser(std::shared_ptr<gtree::HandleContext> context);
+  int resetUserPassword(std::shared_ptr<gtree::HandleContext> context);
+  int changePassword(std::shared_ptr<gtree::HandleContext> context);
 
   std::string TAG;
   hv::HttpService *m_pHttpService;

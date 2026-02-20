@@ -43,6 +43,7 @@ public:
   const std::string &getAuth();
 
   bool parseBodyAndCheck(const std::string &body, std::shared_ptr<gtree::ErrorInfo> &error);
+  const nlohmann::json &requestBody();
 
   // other method
   int success(const nlohmann::json &result);
@@ -62,6 +63,7 @@ private:
   std::string m_msg_id;
   std::string m_method_name;
   std::string m_auth;
+  nlohmann::json m_req_body;
 };
 
 class RequestHandler {

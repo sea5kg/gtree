@@ -134,28 +134,20 @@ int WebServer::httpPostRequests(HttpRequest* req, HttpResponse* resp) {
     return context->error400(error);
   }
 
-  nlohmann::json req_json_body;
-  try {
-    req_json_body = nlohmann::json::parse(req->body);
-  } catch (nlohmann::json::parse_error& error) {
-    // std::cerr << "Parse error at byte: " << error.byte << std::endl;
-    return context->error400(ERR_01002_INVALID_INCOMING_JSON);
-  }
-
   if (context->methodName() == "checkAuth") {
-    return checkAuth(req_json_body, context);
+    return checkAuth(context);
   } else if (context->methodName() == "doLogin") {
-    return doLogin(req_json_body, context);
+    return doLogin(context);
   } else if (context->methodName() == "doLogout") {
-    return doLogout(req_json_body, context);
+    return doLogout(context);
   } else if (context->methodName() == "createUser") {
-    return createUser(req_json_body, context);
+    return createUser(context);
   } else if (context->methodName() == "removeUser") {
-    return removeUser(req_json_body, context);
+    return removeUser(context);
   } else if (context->methodName() == "resetUserPassword") {
-    return resetUserPassword(req_json_body, context);
+    return resetUserPassword(context);
   } else if (context->methodName() == "changePassword") {
-    return changePassword(req_json_body, context);
+    return changePassword(context);
   }
 
   return context->error404(ERR_01006_UNKNOWN_METHOD);
@@ -175,7 +167,7 @@ std::string WebServer::normalizeRequestPath(HttpRequest* req) {
   return sRequestPath;
 }
 
-int WebServer::checkAuth(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::checkAuth(std::shared_ptr<gtree::HandleContext> context) {
   // auth
   UserSession req_session = m_pUsers->findSession(context->getAuth());
   if (req_session.uuid == "") {
@@ -188,12 +180,14 @@ int WebServer::checkAuth(const nlohmann::json &req, std::shared_ptr<gtree::Handl
   return context->success(result);
 }
 
-int WebServer::doLogin(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::doLogin(std::shared_ptr<gtree::HandleContext> context) {
   // auth
   UserSession req_session = m_pUsers->findSession(context->getAuth());
   if (req_session.uuid != "") {
     return context->error401(ERR_01008_YOU_ALREADY_AUTHORIZED);
   }
+
+  const nlohmann::json req = context->requestBody();
 
   if (!req["params"].is_object()) {
     return context->error400(ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS);
@@ -223,7 +217,7 @@ int WebServer::doLogin(const nlohmann::json &req, std::shared_ptr<gtree::HandleC
   return context->success(result);
 }
 
-int WebServer::doLogout(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::doLogout(std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -239,7 +233,7 @@ int WebServer::doLogout(const nlohmann::json &req, std::shared_ptr<gtree::Handle
   return context->success(result);
 }
 
-int WebServer::createUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::createUser(std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -249,6 +243,8 @@ int WebServer::createUser(const nlohmann::json &req, std::shared_ptr<gtree::Hand
   if (req_session.user.role != "admin") {
     return context->error403(ERR_01010_ALLOWED_ONLY_FOR_ADMIN);
   }
+
+  const nlohmann::json req = context->requestBody();
 
   if (!req["params"].is_object()) {
     // std::cerr << "Not found field method " << std::endl;
@@ -280,7 +276,7 @@ int WebServer::createUser(const nlohmann::json &req, std::shared_ptr<gtree::Hand
   return context->success(result);
 }
 
-int WebServer::removeUser(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::removeUser(std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -290,6 +286,8 @@ int WebServer::removeUser(const nlohmann::json &req, std::shared_ptr<gtree::Hand
   if (req_session.user.role != "admin") {
     return context->error403(ERR_01010_ALLOWED_ONLY_FOR_ADMIN);
   }
+
+  const nlohmann::json req = context->requestBody();
 
   if (!req["params"].is_object()) {
     return context->error400(ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS);
@@ -318,7 +316,7 @@ int WebServer::removeUser(const nlohmann::json &req, std::shared_ptr<gtree::Hand
   return context->success(result);
 }
 
-int WebServer::resetUserPassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::resetUserPassword(std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
@@ -328,6 +326,8 @@ int WebServer::resetUserPassword(const nlohmann::json &req, std::shared_ptr<gtre
   if (req_session.user.role != "admin") {
     return context->error403(ERR_10023_ONLY_ADMIN_CAN_RESET_PASSWORD);
   }
+
+  const nlohmann::json req = context->requestBody();
 
   if (!req["params"].is_object()) {
     // std::cerr << "Not found field method " << std::endl;
@@ -355,12 +355,14 @@ int WebServer::resetUserPassword(const nlohmann::json &req, std::shared_ptr<gtre
   return context->success(result);
 }
 
-int WebServer::changePassword(const nlohmann::json &req, std::shared_ptr<gtree::HandleContext> context) {
+int WebServer::changePassword(std::shared_ptr<gtree::HandleContext> context) {
   UserSession req_session = m_pUsers->findSession(context->getAuth());
 
   if (req_session.uuid == "") {
     return context->error401(ERR_01009_NOT_AUTHORIZED);
   }
+
+  const nlohmann::json req = context->requestBody();
 
   if (!req["params"].is_object()) {
     return context->error400(ERR_01007_MISSING_OR_WRONG_FIELD_PARAMS);
